@@ -43,7 +43,17 @@ parseComp :: Text -> Maybe Model.HackInstruction
 parseComp line = Nothing
 
 parseAddr :: Text -> Maybe Model.HackInstruction
-parseAddr line = Nothing
+parseAddr = parse <=< T.stripPrefix "@" . clean
+  where
+    parse :: Text -> Maybe Model.HackInstruction
+    parse l = fmap Model.AddrInstruction $
+      literal l <|> symbol l
+
+    literal :: Text -> Maybe Model.AddrInstruction
+    literal = fmap Model.AddrLiteral . readMaybe . T.unpack
+
+    symbol :: Text -> Maybe Model.AddrInstruction
+    symbol = Just . Model.AddrSymbol
 
 parseLabel :: Text -> Maybe Model.HackInstruction
 parseLabel =

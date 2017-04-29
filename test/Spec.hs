@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+import Control.Monad
 import Test.QuickCheck
 import Test.HUnit
 
@@ -28,11 +29,28 @@ testParseLabel = TestCase $ do
     (Parser.parseLabel "(adf  // syntax error")
     Nothing
 
+testParseAddress :: Test
+testParseAddress = TestCase $ do
+  assertEqual "a literal address"
+    (Parser.parseAddr "@1234  // lol")
+    (Just . Model.AddrInstruction . Model.AddrLiteral $ 1234)
+  assertEqual "a symbolic address"
+    (Parser.parseAddr "  @sum")
+    (Just . Model.AddrInstruction . Model.AddrSymbol $ "sum")
+  forM_
+    [ Parser.parseAddr "   D=A"
+    , Parser.parseAddr " // nothing here"
+    , Parser.parseAddr "(LOOP)"
+    ] $ \c ->
+      assertEqual "not an address" c Nothing
+
+
 main :: IO ()
 main = do
   quickCheck reverseList
   runTestTT $ TestList
     [ TestLabel "clean" testClean
     , TestLabel "parse label" testParseLabel
+    , TestLabel "parse address" testParseAddress
     ]
   return ()

@@ -1,3 +1,6 @@
 
 # Stack files
 .stack-work/
+
+# Vim temp files
+**/.*.swp
