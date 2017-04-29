@@ -2,23 +2,18 @@
 {- LANGUAGE FlexibleContexts #-}
 {- LANGUAGE RankNTypes #-}
 {- LANGUAGE ExistentialQuantification #-}
-{-# LANGUAGE GADTs #-}
+{- LANGUAGE GADTs #-}
 
 
 module Lib where
 
 import Control.Applicative
 import Control.Monad
-import Control.Monad.Writer.Lazy
-import Control.Monad.Reader
-import Control.Monad.Except
-import Control.Monad.State.Lazy
-import Control.Monad.Trans.Maybe
-import Control.Monad.IO.Class
-import Data.Maybe
+import Data.Char (intToDigit)
 import qualified Data.Text as T
 import Data.Text (Text)
 import qualified Data.Map.Strict as Map
+import Numeric (showIntAtBase)
 import System.IO
 
 
@@ -29,6 +24,11 @@ doStuff =
 
 instance Show (a -> b) where
   show f = "<function>"
+
+instance Alternative (Either l) where
+  Right v <|> _ = Right v
+  _ <|> e = e
+  empty = Left (error "Empty Alternative Either")
 
 newtype SrcLine = SrcLine Text
 newtype OutLine = OutLine Text
@@ -118,11 +118,29 @@ collectLabel
   | otherwise =
       Right (state { srcLineNo = SrcLineNo (srcLineNo+1) })
 
+toBinString :: Int -> String
+toBinString n = showIntAtBase 2 intToDigit n ""
 
+leftpad :: a -> Int -> [a] -> [a]
+leftpad p l xs = replicate d p ++ xs
+  where d = max 0 $ length xs - l
+
+lastN :: Int -> [a] -> [a]
+lastN n xs = drop (max 0 $ length xs - n) xs
+
+addrToAInstruction :: Int -> Text
+addrToAInstruction n =
+  T.pack $ leftpad '0' 16 $ lastN 15 $ toBinString n
+
+parseAInstruction :: AsmParseState -> SrcLine -> Either AsmError AsmParseState
+parseAInstruction = undefined
+
+parseCInstruction :: AsmParseState -> SrcLine -> Either AsmError AsmParseState
+parseCInstruction = undefined
 
 parseLine :: AsmParseState -> SrcLine -> Either AsmError AsmParseState
-parseLine state (SrcLine srcLine) =
-  Right state
+parseLine state srcLine =
+  parseAInstruction state srcLine <|> parseCInstruction state srcLine
 
 runAssembler :: Handle -> Handle -> IO ()
 runAssembler srcH outH = do
