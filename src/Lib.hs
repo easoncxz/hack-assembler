@@ -43,36 +43,24 @@ data AsmError
   = SyntaxError SrcLineNo String
   deriving (Show)
 
-parseLine :: AsmParseState -> SrcLine -> Either AsmError AsmParseState
-parseLine
-    (SrcLineNo srcLineNo, OutLineNo outLineNo, table, output)
-    (SrcLine srcLine) =
-  Right (SrcLineNo srcLineNo, OutLineNo outLineNo, table, output)
-
 reportError :: AsmError -> IO ()
 reportError (SyntaxError (SrcLineNo ln) msg) =
   putStrLn $ "Error on line " ++ show ln ++ ": " ++ msg
 
 initState :: AsmParseState
-initState = tableState Map.empty
+initState = tableState $ Map.fromList $
+  [ (T.pack "SP"     , OutLineNo 0)
+  , (T.pack "LCL"    , OutLineNo 1)
+  , (T.pack "ARG"    , OutLineNo 2)
+  , (T.pack "THIS"   , OutLineNo 3)
+  , (T.pack "THAT"   , OutLineNo 4)
+  , (T.pack "SCREEN" , OutLineNo 16384)
+  , (T.pack "KBD"    , OutLineNo 24576)
+  ] ++
+  [(T.pack ("R" ++ show n), OutLineNo n) | n <- [0..15]]
 
 tableState :: AsmSymbolTable -> AsmParseState
 tableState t = (SrcLineNo 1, OutLineNo 0, t, [])
-
-runAssembler :: Handle -> Handle -> IO ()
-runAssembler srcH outH = do
-  srcLines <- map (SrcLine . T.pack) . lines <$> hGetContents srcH
-  case foldM collectLabel initState srcLines of
-    Right (_, _, t, _) -> do
-      putStrLn "Hello."
-      putStrLn . show $ t   -- DEBUG
-      case foldM parseLine (tableState t) srcLines of
-        Right (_, _, _, output) ->
-          putStrLn $ "assembly successful: " ++ show output
-        Left e ->
-          reportError e
-    Left e ->
-      putStrLn $ "There has been an error: " ++ show e
 
 stripComment :: Text -> Text
 stripComment line =
@@ -106,4 +94,24 @@ collectLabel
   | otherwise =
       Right (SrcLineNo (srcLineNo+1), OutLineNo outLineNo, table, output)
 
+parseLine :: AsmParseState -> SrcLine -> Either AsmError AsmParseState
+parseLine
+    (SrcLineNo srcLineNo, OutLineNo outLineNo, table, output)
+    (SrcLine srcLine) =
+  Right (SrcLineNo srcLineNo, OutLineNo outLineNo, table, output)
+
+runAssembler :: Handle -> Handle -> IO ()
+runAssembler srcH outH = do
+  srcLines <- map (SrcLine . T.pack) . lines <$> hGetContents srcH
+  case foldM collectLabel initState srcLines of
+    Right (_, _, t, _) -> do
+      putStrLn "Hello."
+      putStrLn . show $ t   -- DEBUG
+      case foldM parseLine (tableState t) srcLines of
+        Right (_, _, _, output) ->
+          putStrLn $ "assembly successful: " ++ show output
+        Left e ->
+          reportError e
+    Left e ->
+      putStrLn $ "There has been an error: " ++ show e
 
