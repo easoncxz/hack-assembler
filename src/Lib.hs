@@ -43,6 +43,7 @@ data AsmParseState = AsmParseState
   , outLineNo       :: OutLineNo
   , asmSymbolTable  :: AsmSymbolTable
   , asmOutput       :: AsmOutput
+  , nextVariableAddr :: Int
   }
 
 data AsmError
@@ -66,11 +67,12 @@ initState = tableState $ Map.fromList $
   [(T.pack ("R" ++ show n), OutLineNo n) | n <- [0..15]]
 
 tableState :: AsmSymbolTable -> AsmParseState
-tableState t = AsmParseState
+tableState table = AsmParseState
   { srcLineNo = SrcLineNo 1
   , outLineNo = OutLineNo 0
-  , asmSymbolTable = t
+  , asmSymbolTable = table
   , asmOutput = []
+  , nextVariableAddr = 16
   }
 
 stripComment :: Text -> Text
@@ -91,7 +93,7 @@ extractLabel =
 
 collectLabel :: AsmParseState -> SrcLine -> Either AsmError AsmParseState
 collectLabel
-    (AsmParseState
+    state@(AsmParseState
       { srcLineNo = (SrcLineNo srcLineNo)
       , outLineNo = (OutLineNo outLineNo)
       , asmSymbolTable = table
@@ -102,28 +104,19 @@ collectLabel
     case extractLabel line of
       Just label ->
         let table' = Map.insert label (OutLineNo outLineNo) table
-        in Right (AsmParseState
+        in Right (state
           { srcLineNo = SrcLineNo (srcLineNo+1)
-          , outLineNo = OutLineNo outLineNo
           , asmSymbolTable = table'
-          , asmOutput = output
           })
       Nothing ->
         Left $ SyntaxError (SrcLineNo srcLineNo) "label syntax incorrect"
   | hasOutput line =
-      Right (AsmParseState
+      Right (state
         { srcLineNo = SrcLineNo (srcLineNo+1)
         , outLineNo = OutLineNo (outLineNo+1)
-        , asmSymbolTable = table
-        , asmOutput = output
         })
   | otherwise =
-      Right (AsmParseState
-        { srcLineNo = SrcLineNo (srcLineNo+1)
-        , outLineNo = OutLineNo outLineNo
-        , asmSymbolTable = table
-        , asmOutput = output
-        })
+      Right (state { srcLineNo = SrcLineNo (srcLineNo+1) })
 
 
 
