@@ -20,7 +20,7 @@ testParseLabel :: Test
 testParseLabel = TestCase $ do
   assertEqual "really a label"
     (Parser.parseLabel "  (LOOP)   // start here")
-    (Just . Model.AddrInstruction . Model.AddrSymbol $ "LOOP")
+    (Just . Model.LabelInstruction $ "LOOP")
   assertEqual "not a label at all"
     (Parser.parseLabel " @lol  // not a label")
     Nothing

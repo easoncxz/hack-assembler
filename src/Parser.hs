@@ -46,17 +46,8 @@ parseAddr :: Text -> Maybe Model.HackInstruction
 parseAddr line = Nothing
 
 parseLabel :: Text -> Maybe Model.HackInstruction
-parseLabel = parse <=< T.stripSuffix ")" <=< T.stripPrefix "(" . clean
-  where
-    parse :: Text -> Maybe Model.HackInstruction
-    parse t = fmap Model.AddrInstruction $
-      parseLiteralAddress t <|> parseSymbolicAddress t
-
-    parseLiteralAddress :: Text -> Maybe Model.AddrInstruction
-    parseLiteralAddress l = do
-      n <- readMaybe (T.unpack l) :: Maybe Int
-      return (Model.AddrLiteral n)
-
-    parseSymbolicAddress :: Text -> Maybe Model.AddrInstruction
-    parseSymbolicAddress = Just . Model.AddrSymbol
-
+parseLabel =
+  (Just . Model.LabelInstruction)
+  <=< T.stripSuffix ")"
+  <=< T.stripPrefix "("
+  . clean
