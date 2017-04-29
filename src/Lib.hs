@@ -37,7 +37,13 @@ newtype OutLineNo = OutLineNo Int deriving (Show)
 
 type AsmSymbolTable = Map.Map Text OutLineNo
 type AsmOutput = [Text]
-type AsmParseState = (SrcLineNo, OutLineNo, AsmSymbolTable, AsmOutput)
+
+data AsmParseState = AsmParseState
+  { srcLineNo       :: SrcLineNo
+  , outLineNo       :: OutLineNo
+  , asmSymbolTable  :: AsmSymbolTable
+  , asmOutput       :: AsmOutput
+  }
 
 data AsmError
   = SyntaxError SrcLineNo String
@@ -60,7 +66,12 @@ initState = tableState $ Map.fromList $
   [(T.pack ("R" ++ show n), OutLineNo n) | n <- [0..15]]
 
 tableState :: AsmSymbolTable -> AsmParseState
-tableState t = (SrcLineNo 1, OutLineNo 0, t, [])
+tableState t = AsmParseState
+  { srcLineNo = SrcLineNo 1
+  , outLineNo = OutLineNo 0
+  , asmSymbolTable = t
+  , asmOutput = []
+  }
 
 stripComment :: Text -> Text
 stripComment line =
@@ -80,35 +91,55 @@ extractLabel =
 
 collectLabel :: AsmParseState -> SrcLine -> Either AsmError AsmParseState
 collectLabel
-    (SrcLineNo srcLineNo, OutLineNo outLineNo, table, output)
+    (AsmParseState
+      { srcLineNo = (SrcLineNo srcLineNo)
+      , outLineNo = (OutLineNo outLineNo)
+      , asmSymbolTable = table
+      , asmOutput = output
+      })
     (SrcLine line)
   | hasLabel line =
     case extractLabel line of
       Just label ->
         let table' = Map.insert label (OutLineNo outLineNo) table
-        in Right (SrcLineNo (srcLineNo+1), OutLineNo outLineNo, table', output)
+        in Right (AsmParseState
+          { srcLineNo = SrcLineNo (srcLineNo+1)
+          , outLineNo = OutLineNo outLineNo
+          , asmSymbolTable = table'
+          , asmOutput = output
+          })
       Nothing ->
         Left $ SyntaxError (SrcLineNo srcLineNo) "label syntax incorrect"
   | hasOutput line =
-      Right (SrcLineNo (srcLineNo+1), OutLineNo (outLineNo+1), table, output)
+      Right (AsmParseState
+        { srcLineNo = SrcLineNo (srcLineNo+1)
+        , outLineNo = OutLineNo (outLineNo+1)
+        , asmSymbolTable = table
+        , asmOutput = output
+        })
   | otherwise =
-      Right (SrcLineNo (srcLineNo+1), OutLineNo outLineNo, table, output)
+      Right (AsmParseState
+        { srcLineNo = SrcLineNo (srcLineNo+1)
+        , outLineNo = OutLineNo outLineNo
+        , asmSymbolTable = table
+        , asmOutput = output
+        })
+
+
 
 parseLine :: AsmParseState -> SrcLine -> Either AsmError AsmParseState
-parseLine
-    (SrcLineNo srcLineNo, OutLineNo outLineNo, table, output)
-    (SrcLine srcLine) =
-  Right (SrcLineNo srcLineNo, OutLineNo outLineNo, table, output)
+parseLine state (SrcLine srcLine) =
+  Right state
 
 runAssembler :: Handle -> Handle -> IO ()
 runAssembler srcH outH = do
   srcLines <- map (SrcLine . T.pack) . lines <$> hGetContents srcH
   case foldM collectLabel initState srcLines of
-    Right (_, _, t, _) -> do
+    Right (AsmParseState { asmSymbolTable = t }) -> do
       putStrLn "Hello."
       putStrLn . show $ t   -- DEBUG
       case foldM parseLine (tableState t) srcLines of
-        Right (_, _, _, output) ->
+        Right (AsmParseState { asmOutput = output }) ->
           putStrLn $ "assembly successful: " ++ show output
         Left e ->
           reportError e
