@@ -122,7 +122,7 @@ parseExpr expr =
       _ ->
         Nothing
   else if "|" `T.isInfixOf` expr then
-    case map T.strip $ T.splitOn "&" expr of
+    case map T.strip $ T.splitOn "|" expr of
       "D":"A":[] ->
         Just (DOrR, UseA)
       "D":"M":[] ->
