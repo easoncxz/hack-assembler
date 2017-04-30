@@ -1,13 +1,15 @@
 (BEGIN)
-one
-two
-three
+@34
+D=A
+@sum
+M=D
+
     // not four
 
-
 (LOOP)
-  four  // comment here
-    five
+  @BEGIN
+  0; JMP  // comment here
+  M=D+1
 
 (END)
-six
+  D=A

@@ -9,28 +9,11 @@ import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Set (Set)
 import qualified Data.Set as Set
-import Data.Sequence (Seq)
-import qualified Data.Sequence as Seq
 import Data.Text (Text)
 import qualified Data.Text as T
 import Text.Read
 
 import Model
-
-type SymbolTable = Map Text Int
-type Output = Seq Text
-
-data ParseState = ParseState
-  { srcLineNo        :: Int
-  , outLineNo        :: Int
-  , symbolTable      :: SymbolTable
-  , output           :: Output
-  , nextVariableAddr :: Int
-  }
-
-data AsmError
-  = SyntaxError Int String
-  deriving (Show)
 
 parseLine :: Text -> Maybe HackInstruction
 parseLine l = parseEmpty l <|> parseLabel l <|> parseAddr l <|> parseComp l
