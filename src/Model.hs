@@ -11,13 +11,12 @@ import Data.Text (Text)
 import qualified Data.Text as T
 
 type SymbolTable = Map Text Int
-type Output = Seq Text
 
 data ParseState = ParseState
   { srcLineNo        :: Int
   , outLineNo        :: Int
   , symbolTable      :: SymbolTable
-  , output           :: Output
+  , output           :: Seq Text
   , nextVariableAddr :: Int
   }
   deriving (Show)

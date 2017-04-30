@@ -7,39 +7,24 @@ import Control.Applicative
 import Control.Monad
 import Data.Text (Text)
 import qualified Data.Text as T
-import qualified Data.Text.IO as T
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Sequence (Seq, (|>))
 import qualified Data.Sequence as Seq
-import System.IO
 
 import Model
 import Parser (parseLine)
 import Formatter (formatComp, formatAddr)
 
-doStuff :: IO ()
-doStuff = do
-  assemble stdin stdout
-
--- | Run the assembler on the given source and output files.
-assemble :: Handle -> Handle -> IO ()
-assemble hSrc hOut = do
-  lines <- map T.pack . lines <$> hGetContents hSrc :: IO [Text]
-  let
+-- | Run the two-pass assembler
+assemble :: [Text] -> Either AsmError (Seq Text)
+assemble src = do
+  withSymbols <- foldM collectLabels initState src
+  ParseState { output } <- foldM produceOutput withSymbols src
+  return output
+  where
     initState = withTable builtins
-    finState = do
-      symbolsState <- foldM collectLabels initState lines
-      foldM produceOutput symbolsState lines
-  case finState of
-    Left e ->
-      putStrLn . show $ e
-    Right state@(ParseState { output }) ->
-      mapM_ T.putStrLn output
 
-
--- | Parameterised for usage across the two passes.
--- |
 -- | Line numbers refer to the lines *before* doing each step of
 -- | srcLineNo is 1 because source-file line numbers are 1-indexed.
 -- | outLineNo is 0 because instruction addresses are 0-indexed in the ROM.

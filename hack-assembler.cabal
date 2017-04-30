@@ -34,6 +34,7 @@ executable hack-assembler-exe
                      , mtl
                      , transformers
                      , hack-assembler
+                     , text
   default-language:    Haskell2010
 
 test-suite hack-assembler-test
