@@ -4,12 +4,14 @@ module Parser where
 
 import Control.Applicative
 import Control.Monad
-import qualified Data.Map.Strict as Map
 import Data.Map.Strict (Map)
-import qualified Data.Sequence as Seq
+import qualified Data.Map.Strict as Map
+import Data.Set (Set)
+import qualified Data.Set as Set
 import Data.Sequence (Seq)
-import qualified Data.Text as T
+import qualified Data.Sequence as Seq
 import Data.Text (Text)
+import qualified Data.Text as T
 import Text.Read
 
 
@@ -37,23 +39,12 @@ clean line =
   in T.strip code
 
 parse :: Text -> Maybe Model.HackInstruction
-parse l = parseComp l <|> parseAddr l <|> parseLabel l
+parse l = parseEmpty l <|> parseLabel l <|> parseAddr l <|> parseComp l
 
-parseComp :: Text -> Maybe Model.HackInstruction
-parseComp line = Nothing
-
-parseAddr :: Text -> Maybe Model.HackInstruction
-parseAddr = parse <=< T.stripPrefix "@" . clean
-  where
-    parse :: Text -> Maybe Model.HackInstruction
-    parse l = fmap Model.AddrInstruction $
-      literal l <|> symbol l
-
-    literal :: Text -> Maybe Model.AddrInstruction
-    literal = fmap Model.AddrLiteral . readMaybe . T.unpack
-
-    symbol :: Text -> Maybe Model.AddrInstruction
-    symbol = Just . Model.AddrSymbol
+parseEmpty :: Text -> Maybe Model.HackInstruction
+parseEmpty line = do
+  guard (T.null (clean line))
+  Just Model.EmptyInstruction
 
 parseLabel :: Text -> Maybe Model.HackInstruction
 parseLabel =
@@ -61,3 +52,20 @@ parseLabel =
   <=< T.stripSuffix ")"
   <=< T.stripPrefix "("
   . clean
+
+parseAddr :: Text -> Maybe Model.HackInstruction
+parseAddr = parse <=< T.stripPrefix "@" . clean
+  where
+    parse :: Text -> Maybe Model.HackInstruction
+    parse line = fmap Model.AddrInstruction $
+      literal line <|> symbol line
+
+    literal :: Text -> Maybe Model.AddrInstruction
+    literal = fmap Model.AddrLiteral . readMaybe . T.unpack
+
+    symbol :: Text -> Maybe Model.AddrInstruction
+    symbol = Just . Model.AddrSymbol
+
+parseComp :: Text -> Maybe Model.HackInstruction
+parseComp line = undefined
+

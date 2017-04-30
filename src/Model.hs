@@ -1,11 +1,18 @@
 
 module Model where
 
-import qualified Data.Text as T
+import Data.Set (Set)
+import qualified Data.Set as Set
 import Data.Text (Text)
+import qualified Data.Text as T
 
 data HackRegister = RegD | RegM | RegA
-  deriving (Eq, Show)
+  deriving (Eq, Ord)
+
+instance Show HackRegister where
+  show RegD = "D"
+  show RegM = "M"
+  show RegA = "A"
 
 data HackAM = UseA | UseM
   deriving (Eq, Show)
@@ -13,9 +20,9 @@ data HackAM = UseA | UseM
 data HackComputation
   = ComputeZero
   | ComputeOne
-  | NegOne
-  | JustD
-  | JustR
+  | ComputeNegOne
+  | ComputeD
+  | ComputeR
   | NotD
   | NotR
   | DPlusOne
@@ -29,20 +36,17 @@ data HackComputation
   | DOrR
   deriving (Eq, Show)
 
-data HackJump
-  = NoJump | JGT | JEQ | JGE | JLT | JNE | JLE | JMP
-  deriving (Eq, Show)
-
 data HackInstruction
   = CompInstruction
-    { instrDestination :: [HackRegister]
+    { instrDestination :: Set HackRegister
     , instrComputation :: HackComputation
     , instrAM          :: HackAM
-    , instrJump        :: Maybe HackJump
+    , instrJump        :: Set Ordering
     }
   | AddrInstruction AddrInstruction
   | LabelInstruction
     { instrLabel :: Text }
+  | EmptyInstruction
   deriving (Eq, Show)
 
 data AddrInstruction
