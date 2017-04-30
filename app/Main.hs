@@ -5,16 +5,14 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Control.Applicative
 import Control.Monad
-import System.IO
-import System.Environment
 
 import Lib (assemble)
 
 main :: IO ()
 main = do
-  src <- map T.pack . lines <$> hGetContents stdin
+  src <- map T.pack . lines <$> getContents
   case assemble src of
-    Left e ->
-      putStrLn . show $ e
+    Left error ->
+      putStrLn . show $ error
     Right out ->
-      mapM_ (T.hPutStrLn stdout) out
+      mapM_ T.putStrLn out
