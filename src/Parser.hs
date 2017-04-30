@@ -87,6 +87,12 @@ parseExpr expr =
         Nothing
   else if "-" `T.isInfixOf` expr then
     case map T.strip $ T.splitOn "-" expr of
+      "":"D":[] ->
+        Just (NegD, UseA)
+      "":"A":[] ->
+        Just (NegR, UseA)
+      "":"M":[] ->
+        Just (NegR, UseM)
       "D":"1":[] ->
         Just (DSubOne, UseA)
       "A":"1":[] ->

@@ -1,10 +1,31 @@
 
 module Model where
 
+import Data.Map.Strict (Map)
+import qualified Data.Map.Strict as Map
+import Data.Sequence (Seq)
+import qualified Data.Sequence as Seq
 import Data.Set (Set)
 import qualified Data.Set as Set
 import Data.Text (Text)
 import qualified Data.Text as T
+
+type SymbolTable = Map Text Int
+type Output = Seq Text
+
+data ParseState = ParseState
+  { srcLineNo        :: Int
+  , outLineNo        :: Int
+  , symbolTable      :: SymbolTable
+  , output           :: Output
+  , nextVariableAddr :: Int
+  }
+  deriving (Show)
+
+data AsmError
+  = SyntaxError Int String
+  deriving (Show)
+
 
 data HackRegister = RegD | RegM | RegA
   deriving (Eq, Ord)
@@ -25,6 +46,8 @@ data HackComputation
   | ComputeR
   | NotD
   | NotR
+  | NegD
+  | NegR
   | DPlusOne
   | RPlusOne
   | DSubOne
@@ -55,3 +78,4 @@ data AddrInstruction
   | AddrSymbol
     { instrAddrSymbol :: Text }
   deriving (Eq, Show)
+

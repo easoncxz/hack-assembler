@@ -13,13 +13,6 @@ import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 
 import Model
-  ( HackInstruction
-    ( LabelInstruction
-    , AddrInstruction
-    , CompInstruction
-    , EmptyInstruction
-    )
-  )
 import Parser (parseLine)
 
 doStuff :: IO ()
@@ -29,23 +22,6 @@ doStuff = do
     s = parseStateWithTable builtinSymbols
     result = foldM collectLabels s lines
   putStrLn . show $ result
-
-type SymbolTable = Map Text Int
-type Output = Seq Text
-
-data ParseState = ParseState
-  { srcLineNo        :: Int
-  , outLineNo        :: Int
-  , symbolTable      :: SymbolTable
-  , output           :: Output
-  , nextVariableAddr :: Int
-  }
-  deriving (Show)
-
-data AsmError
-  = SyntaxError Int String
-  deriving (Show)
-
 builtinSymbols :: SymbolTable
 builtinSymbols = Map.fromList $
   map (T.pack *** id) $
