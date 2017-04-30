@@ -44,7 +44,6 @@ testParseAddress = TestCase $ do
     ] $ \c ->
       assertEqual "not an address" c Nothing
 
-
 main :: IO ()
 main = do
   quickCheck reverseList
