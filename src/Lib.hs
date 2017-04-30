@@ -92,10 +92,10 @@ produceOutput
     Just (LabelInstruction {}) ->
       Right . src $ state
     Just (AddrInstruction a) ->
-      let state@(ParseState { symbolTable }) = addVariable a state
+      let preventative@(ParseState { symbolTable }) = addVariable a state
       in case formatAddr symbolTable a of
         Just output ->
-          Right . src . out . write output $ state
+          Right . src . out . write output $ preventative
         Nothing ->
           Left $ ProgramError "Please report a bug: A-symbol bumping"
     Just (CompInstruction
