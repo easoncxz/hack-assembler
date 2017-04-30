@@ -24,6 +24,7 @@ data ParseState = ParseState
 
 data AsmError
   = SyntaxError Int String
+  | ProgramError String
   deriving (Show)
 
 

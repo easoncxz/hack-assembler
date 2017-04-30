@@ -67,24 +67,22 @@ formatAM :: HackAM -> Text
 formatAM UseA = "0"
 formatAM UseM = "1"
 
--- | Some "instructions" don't generate any output.
--- | We need a symbol table to look up symbolic A-instructions.
-formatInstruction :: SymbolTable -> HackInstruction -> Maybe Text
-formatInstruction table EmptyInstruction = Nothing
-formatInstruction table (LabelInstruction {}) = Nothing
-formatInstruction
-    table
-    (CompInstruction
-      { instrComputation, instrDestination, instrJump, instrAM }) =
-  Just $ T.concat
+-- | We can always produce output
+formatComp ::
+  Set HackRegister -> HackComputation -> HackAM -> Set Ordering -> Text
+formatComp dest comp am jump =
+  T.concat
     [ "111"
-    , formatAM instrAM
-    , formatCompExpr instrComputation
-    , formatDest instrDestination
-    , formatJump instrJump
+    , formatAM am
+    , formatCompExpr comp
+    , formatDest dest
+    , formatJump jump
     ]
-formatInstruction table (AddrInstruction (AddrLiteral lit)) =
+
+-- | We may fail due to symbol-lookup miss
+formatAddr :: SymbolTable -> AddrInstruction -> Maybe Text
+formatAddr table (AddrLiteral lit) =
   Just (toBinaryString lit)
-formatInstruction table (AddrInstruction (AddrSymbol sym)) = do
+formatAddr table (AddrSymbol sym) = do
   lit <- Map.lookup sym table
   return (toBinaryString lit)
