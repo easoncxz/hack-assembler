@@ -15,8 +15,7 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Text.Read
 
-
-import qualified Model as Model
+import Model
 
 type SymbolTable = Map Text Int
 type Output = Seq Text
@@ -33,116 +32,116 @@ data AsmError
   = SyntaxError Int String
   deriving (Show)
 
+parseLine :: Text -> Maybe HackInstruction
+parseLine l = parseEmpty l <|> parseLabel l <|> parseAddr l <|> parseComp l
+
 -- | Remove whitespace and comments
 clean :: Text -> Text
 clean line =
   let (code, comment) = T.breakOn "//" line
   in T.strip code
 
-parse :: Text -> Maybe Model.HackInstruction
-parse l = parseEmpty l <|> parseLabel l <|> parseAddr l <|> parseComp l
-
-parseEmpty :: Text -> Maybe Model.HackInstruction
+parseEmpty :: Text -> Maybe HackInstruction
 parseEmpty line = do
   guard (T.null (clean line))
-  Just Model.EmptyInstruction
+  Just EmptyInstruction
 
-parseLabel :: Text -> Maybe Model.HackInstruction
+parseLabel :: Text -> Maybe HackInstruction
 parseLabel =
-  (Just . Model.LabelInstruction)
+  (Just . LabelInstruction)
   <=< T.stripSuffix ")"
   <=< T.stripPrefix "("
   . clean
 
-parseAddr :: Text -> Maybe Model.HackInstruction
+parseAddr :: Text -> Maybe HackInstruction
 parseAddr = parse <=< T.stripPrefix "@" . clean
   where
-    parse :: Text -> Maybe Model.HackInstruction
-    parse line = fmap Model.AddrInstruction $
+    parse :: Text -> Maybe HackInstruction
+    parse line = fmap AddrInstruction $
       literal line <|> symbol line
 
-    literal :: Text -> Maybe Model.AddrInstruction
-    literal = fmap Model.AddrLiteral . readMaybe . T.unpack
+    literal :: Text -> Maybe AddrInstruction
+    literal = fmap AddrLiteral . readMaybe . T.unpack
 
-    symbol :: Text -> Maybe Model.AddrInstruction
-    symbol = Just . Model.AddrSymbol
+    symbol :: Text -> Maybe AddrInstruction
+    symbol = Just . AddrSymbol
 
-parseDest :: Text -> Maybe (Set Model.HackRegister)
+parseDest :: Text -> Maybe (Set HackRegister)
 parseDest dest = do
   guard $ T.null $ T.filter (not . (`elem` ("DMA" :: String))) dest
   Just $ Set.fromList
-    [r | r <- [Model.RegD, Model.RegM, Model.RegA]
+    [r | r <- [RegD, RegM, RegA]
        , T.pack (show r) `T.isInfixOf` dest ]
 
-parseExpr :: Text -> Maybe (Model.HackComputation, Model.HackAM)
-parseExpr "1"  = Just ( Model.ComputeOne    , Model.UseA)
-parseExpr "0"  = Just ( Model.ComputeZero   , Model.UseA)
-parseExpr "-1" = Just ( Model.ComputeNegOne , Model.UseA)
-parseExpr "D"  = Just ( Model.ComputeD      , Model.UseA)
-parseExpr "M"  = Just ( Model.ComputeR      , Model.UseM)
-parseExpr "A"  = Just ( Model.ComputeR      , Model.UseA)
-parseExpr "!D" = Just ( Model.NotD          , Model.UseA)
-parseExpr "!M" = Just ( Model.NotR          , Model.UseM)
-parseExpr "!A" = Just ( Model.NotR          , Model.UseA)
+parseExpr :: Text -> Maybe (HackComputation, HackAM)
+parseExpr "1"  = Just ( ComputeOne    , UseA)
+parseExpr "0"  = Just ( ComputeZero   , UseA)
+parseExpr "-1" = Just ( ComputeNegOne , UseA)
+parseExpr "D"  = Just ( ComputeD      , UseA)
+parseExpr "M"  = Just ( ComputeR      , UseM)
+parseExpr "A"  = Just ( ComputeR      , UseA)
+parseExpr "!D" = Just ( NotD          , UseA)
+parseExpr "!M" = Just ( NotR          , UseM)
+parseExpr "!A" = Just ( NotR          , UseA)
 parseExpr expr =
   if "+" `T.isInfixOf` expr then
     case map T.strip $ T.splitOn "+" expr of
       "D":"1":[] ->
-        Just (Model.DPlusOne, Model.UseA)
+        Just (DPlusOne, UseA)
       "A":"1":[] ->
-        Just (Model.RPlusOne, Model.UseA)
+        Just (RPlusOne, UseA)
       "M":"1":[] ->
-        Just (Model.RPlusOne, Model.UseM)
+        Just (RPlusOne, UseM)
       "D":"A":[] ->
-        Just (Model.DPlusR, Model.UseA)
+        Just (DPlusR, UseA)
       "D":"M":[] ->
-        Just (Model.DPlusR, Model.UseM)
+        Just (DPlusR, UseM)
       "A":"D":[] ->
-        Just (Model.DPlusR, Model.UseA)
+        Just (DPlusR, UseA)
       "M":"D":[] ->
-        Just (Model.DPlusR, Model.UseM)
+        Just (DPlusR, UseM)
       _ ->
         Nothing
   else if "-" `T.isInfixOf` expr then
     case map T.strip $ T.splitOn "-" expr of
       "D":"1":[] ->
-        Just (Model.DSubOne, Model.UseA)
+        Just (DSubOne, UseA)
       "A":"1":[] ->
-        Just (Model.RSubOne, Model.UseA)
+        Just (RSubOne, UseA)
       "M":"1":[] ->
-        Just (Model.RSubOne, Model.UseM)
+        Just (RSubOne, UseM)
       "D":"A":[] ->
-        Just (Model.DSubR, Model.UseA)
+        Just (DSubR, UseA)
       "D":"M":[] ->
-        Just (Model.DSubR, Model.UseM)
+        Just (DSubR, UseM)
       "A":"D":[] ->
-        Just (Model.RSubD, Model.UseA)
+        Just (RSubD, UseA)
       "M":"D":[] ->
-        Just (Model.RSubD, Model.UseM)
+        Just (RSubD, UseM)
       _ ->
         Nothing
   else if "&" `T.isInfixOf` expr then
     case map T.strip $ T.splitOn "&" expr of
       "D":"A":[] ->
-        Just (Model.DAndR, Model.UseA)
+        Just (DAndR, UseA)
       "D":"M":[] ->
-        Just (Model.DAndR, Model.UseM)
+        Just (DAndR, UseM)
       "A":"D":[] ->
-        Just (Model.DAndR, Model.UseA)
+        Just (DAndR, UseA)
       "M":"D":[] ->
-        Just (Model.DAndR, Model.UseM)
+        Just (DAndR, UseM)
       _ ->
         Nothing
   else if "|" `T.isInfixOf` expr then
     case map T.strip $ T.splitOn "&" expr of
       "D":"A":[] ->
-        Just (Model.DOrR, Model.UseA)
+        Just (DOrR, UseA)
       "D":"M":[] ->
-        Just (Model.DOrR, Model.UseM)
+        Just (DOrR, UseM)
       "A":"D":[] ->
-        Just (Model.DOrR, Model.UseA)
+        Just (DOrR, UseA)
       "M":"D":[] ->
-        Just (Model.DOrR, Model.UseM)
+        Just (DOrR, UseM)
       _ ->
         Nothing
   else
@@ -173,10 +172,10 @@ splitComp line =
       (T.reverse *** T.reverse) (rDest, rComp)
   in (dest, comp, jump)
 
-parseComp :: Text -> Maybe Model.HackInstruction
+parseComp :: Text -> Maybe HackInstruction
 parseComp line = do
   let (dest, expr, jump) = splitComp (clean line)
   d <- parseDest dest
   j <- parseJump jump
   (c, am) <- parseExpr expr
-  return $ Model.CompInstruction d c am j
+  return $ CompInstruction d c am j
