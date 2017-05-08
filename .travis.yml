@@ -28,7 +28,7 @@ deploy:
     - skip_cleanup: true
       provider: releases
       api_key: $EASONCXZ_GITHUB_OAUTH_TOKEN
-      file: $(stack path --dist-dir)/hack-assembler-0.1.0.0.tar.gz
+      file: $(stack path --dist-dir)/hack-assembler-$(./automation/version.sh hack-assembler.cabal).tar.gz
       on:
           tags: true
 
