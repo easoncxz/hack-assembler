@@ -1,0 +1,18 @@
+
+os: osx
+osx_image: xcode6.4
+
+language: generic
+
+before_install:
+    - brew update
+    - brew list haskell-stack || brew install haskell-stack
+
+install:
+    # A "failure" in our dependencies should be an "error" for us.
+    - stack setup
+    - stack test --only-dependencies
+
+script:
+    # We count out own failures as such.
+    - stack test
