@@ -4,6 +4,10 @@ osx_image: xcode6.4
 
 language: generic
 
+cache:
+    directories:
+        - $HOME/.stack/
+
 before_install:
     - brew update --verbose
     - brew list --verbose haskell-stack || brew install --verbose haskell-stack
