@@ -68,20 +68,17 @@ testFormatting = TestCase $ do
     (Formatter.formatJump $ Set.fromList [GT])
     "001"
   assertEqual "A-instruction"
-    (Formatter.formatInstruction
+    (Formatter.formatAddr
       Map.empty
-      (Model.AddrInstruction
-        (Model.AddrLiteral 5)))
+      (Model.AddrLiteral 5))
     (Just "0000000000000101")
   assertEqual "Whole C-instruction"
-    (Formatter.formatInstruction Map.empty $
-      Model.CompInstruction
-        { Model.instrDestination = (Set.fromList [Model.RegA, Model.RegD])
-        , Model.instrComputation = Model.RSubOne
-        , Model.instrAM = Model.UseM
-        , Model.instrJump = (Set.fromList [GT,EQ])
-        })
-    (Just "1111110010110011")
+    (Formatter.formatComp
+       (Set.fromList [Model.RegA, Model.RegD])
+       Model.RSubOne
+       Model.UseM
+       (Set.fromList [GT,EQ]))
+    "1111110010110011"
 
 
 main :: IO ()
