@@ -9,12 +9,6 @@ cache:
         - $HOME/.stack/
 
 before_install:
-    - |
-        if git tag | grep '^v'$(./automation/version.sh hack-assembler.cabal)'$'
-        then
-            echo 'Error: version needs to be bumped; a tag for this version already exists'
-            false   # Fail fast
-        fi
     - brew update --verbose
     - brew list --verbose haskell-stack || brew install --verbose haskell-stack
 
@@ -28,8 +22,6 @@ script:
     - stack --no-terminal test
 
 before_deploy:
-    - git tag -a v$(./automation/version.sh hack-assembler.cabal) -m 'Auto-tagging during Travis build'
-    - git push --tags
     - stack sdist
 
 deploy:
