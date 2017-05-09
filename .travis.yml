@@ -21,15 +21,10 @@ script:
     # We count out own failures as such.
     - stack --no-terminal test
 
-before_deploy:
-    - stack sdist
-
 deploy:
     - skip_cleanup: true
-      provider: releases
-      api_key: $EASONCXZ_GITHUB_OAUTH_TOKEN
-      file: $(stack path --dist-dir)/hack-assembler-$(./automation/version.sh hack-assembler.cabal).tar.gz
+      provider: script
+      script: automation/deploy.sh
       on:
           tags: true
-
 
