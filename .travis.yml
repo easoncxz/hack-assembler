@@ -24,7 +24,7 @@ script:
 deploy:
     - skip_cleanup: true
       provider: script
-      script: automation/deploy.sh
+      script: stack exec deploy-sdist-github -- hack-assembler.cabal
       on:
           tags: true
 
