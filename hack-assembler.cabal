@@ -1,5 +1,5 @@
 name:                hack-assembler
-version:             0.1.0.3
+version:             0.1.0.6
 synopsis:            An assembler for the Hack language
 description:         A coursework project for nand2tetris
 homepage:            https://github.com/easoncxz/hack-assembler
@@ -19,9 +19,29 @@ library
                      , Parser
                      , Formatter
                      , Model
+                     , Automation.Github
+                     , Automation.CabalVersion
   build-depends:       base >= 4.7 && < 5
                      , text
                      , containers
+
+                     -- CI stuff:
+                     , turtle
+                     , foldl
+                     , system-filepath
+                     , directory
+                     , Cabal
+                     , wreq
+                     , lens
+                     , lens-aeson
+                     , aeson
+                     , unordered-containers
+                     , vector
+                     , bytestring
+                     , utf8-string
+                     , uri-templater
+                     , either
+                     , optional-args
   default-language:    Haskell2010
 
 executable hack-assembler-exe
