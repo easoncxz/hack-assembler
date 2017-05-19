@@ -64,6 +64,17 @@ executable deploy-sdist-github
                      , system-filepath
   default-language:    Haskell2010
 
+executable maybe-tag
+  hs-source-dirs:      automation
+  main-is:             MaybeTag.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , hack-assembler
+                     , turtle
+                     , foldl
+                     , text
+  default-language:    Haskell2010
+
 test-suite hack-assembler-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
