@@ -10,4 +10,4 @@ for that course: [(PDF) 6. Assembler](http://www.nand2tetris.org/chapters/chapte
 Build and run:
 
     $ stack install
-    $ hack-assembler-exe < hello.asm > output.hack
+    $ hack-assembler < hello.asm > output.hack
