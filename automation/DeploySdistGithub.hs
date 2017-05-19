@@ -1,6 +1,6 @@
-#!/usr/bin/env stack runhaskell --package hack-assembler --
-
 {-# LANGUAGE OverloadedStrings #-}
+
+-- | Deploy sdist tarballs onto Github as a Github Release
 
 import Prelude hiding (FilePath)
 import Control.Applicative
