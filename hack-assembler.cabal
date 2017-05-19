@@ -1,5 +1,5 @@
 name:                hack-assembler
-version:             0.1.0.0
+version:             0.1.1.2
 synopsis:            An assembler for the Hack language
 description:         A coursework project for nand2tetris
 homepage:            https://github.com/easoncxz/hack-assembler
@@ -19,17 +19,59 @@ library
                      , Parser
                      , Formatter
                      , Model
+                     , Automation.Github
+                     , Automation.CabalVersion
   build-depends:       base >= 4.7 && < 5
                      , text
                      , containers
+
+                     -- Stuff for CI:
+                     , turtle
+                     , foldl
+                     , system-filepath
+                     , directory
+                     , Cabal
+                     , wreq
+                     , lens
+                     , lens-aeson
+                     , aeson
+                     , unordered-containers
+                     , vector
+                     , bytestring
+                     , utf8-string
+                     , uri-templater
+                     , either
+                     , optional-args
   default-language:    Haskell2010
 
-executable hack-assembler-exe
+executable hack-assembler
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , hack-assembler
+                     , text
+  default-language:    Haskell2010
+
+executable deploy-sdist-github
+  hs-source-dirs:      automation
+  main-is:             DeploySdistGithub.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , hack-assembler
+                     , turtle
+                     , optional-args
+                     , system-filepath
+  default-language:    Haskell2010
+
+executable maybe-tag
+  hs-source-dirs:      automation
+  main-is:             MaybeTag.hs
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , hack-assembler
+                     , turtle
+                     , foldl
                      , text
   default-language:    Haskell2010
 
