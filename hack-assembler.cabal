@@ -42,6 +42,7 @@ library
                      , uri-templater
                      , either
                      , optional-args
+                     , string-conversions
   default-language:    Haskell2010
 
 executable hack-assembler
@@ -76,6 +77,11 @@ executable update-homebrew-formula
                      , managed
                      , text
                      , foldl
+                     , cryptohash
+                     , string-conversions
+                     , wreq
+                     , bytestring
+                     , lens
   default-language:    Haskell2010
 
 executable maybe-tag

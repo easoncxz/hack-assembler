@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Automation.Github where
 
@@ -6,6 +7,8 @@ import Control.Arrow
 import Control.Monad
 import Control.Lens
 import Data.String (IsString)
+import Data.String.Conversions (ConvertibleStrings)
+import Data.String.Conversions.Monomorphic (fromString)
 import Data.Text (Text)
 import Data.Version
 import qualified Data.Text as T
@@ -19,7 +22,6 @@ import qualified Control.Foldl as Fold
 import qualified Data.Aeson as A
 import qualified Data.Aeson.Lens as A
 import qualified Data.ByteString as B
-import Data.ByteString.UTF8 (fromString)
 import qualified Data.ByteString.Lazy as BL
 import Data.Either.Combinators (rightToMaybe)
 import qualified Data.HashMap.Lazy as HML
@@ -45,7 +47,7 @@ deployRelease version = do
 -- | First Github API call: defining the release
 defineRelease :: Version -> IO (Response BL.ByteString)
 defineRelease version = do
-  auth <- authenticate <$> oauthToken
+  auth <- requestAuthenticator
   let opts = defaults & auth
   postWith opts
     (githubApi "/repos/easoncxz/hack-assembler/releases")
@@ -61,7 +63,7 @@ uploadSdistTarball version uriTemplate = do
   path <- findSdistTarball version
   bytes <- readSdistTarball path
   let uri = renderUploadUrl version uriTemplate
-  auth <- authenticate <$> oauthToken
+  auth <- requestAuthenticator
   let opts = defaults & auth
   postWith opts uri bytes
 
@@ -123,11 +125,12 @@ githubApi :: String -> String
 githubApi =
   ("https://api.github.com" ++)
 
-oauthToken :: IO String
+oauthToken :: (ConvertibleStrings String a) => IO a
 oauthToken =
-  getEnv "EASONCXZ_GITHUB_OAUTH_TOKEN_v2"
+  fromString <$> getEnv "EASONCXZ_GITHUB_OAUTH_TOKEN_v2"
 
-authenticate :: String -> Options -> Options
-authenticate oauthToken =
-  header "Authorization" .~ ["token " `B.append` fromString oauthToken]
+requestAuthenticator :: IO (Options -> Options)
+requestAuthenticator = do
+  token <- oauthToken
+  return $ header "Authorization" .~ ["token " `B.append` token]
 
