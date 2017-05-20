@@ -2,7 +2,7 @@
 
 require 'optparse'
 
-require './update_formula'
+require './automation/update_formula.rb'
 
 def main
   include FormulaManip
