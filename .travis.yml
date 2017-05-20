@@ -9,6 +9,7 @@ cache:
         - $HOME/.stack/
 
 before_install:
+    - curl -i -H "Authorization: token $EASONCXZ_GITHUB_OAUTH_TOKEN" https://api.github.com/user
     - brew update --verbose
     - brew list --verbose haskell-stack || brew install --verbose haskell-stack
 
