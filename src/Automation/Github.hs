@@ -125,7 +125,7 @@ githubApi =
 
 oauthToken :: IO String
 oauthToken =
-  getEnv "EASONCXZ_GITHUB_OAUTH_TOKEN"
+  getEnv "EASONCXZ_GITHUB_OAUTH_TOKEN_v2"
 
 authenticate :: String -> Options -> Options
 authenticate oauthToken =

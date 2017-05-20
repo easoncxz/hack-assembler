@@ -13,13 +13,13 @@ import Control.Monad.Managed
 import qualified Control.Foldl as Fold
 import Filesystem.Path.CurrentOS (encodeString)
 
-import Automation.Github (deployRelease)
+import Automation.Github (deployRelease, oauthToken)
 import Automation.CabalVersion (readVersion)
 import qualified Automation.CabalVersion as MyVersion
 
 main = do
   version <- readVersion "hack-assembler.cabal"
-  token <- T.pack <$> getEnv "EASONCXZ_GITHUB_OAUTH_TOKEN"
+  token <- T.pack <$> oauthToken
   inTravis <- lookupEnv "TRAVIS"
   when (inTravis /= Nothing) $ do
     shell "git config --global user.name \"Travis CI\"" empty
