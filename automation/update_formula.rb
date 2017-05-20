@@ -1,41 +1,51 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
 require 'parser/current'
 require 'unparser'
 
 Parser::Builders::Default.emit_lambda = true
 Parser::Builders::Default.emit_procarg0 = true
 
-####
-
 def main
-  if ARGV.length == 0 then
-    puts "usage: update_bottle my-formula.rb"
+  options = parse_opts
+  ast = Parser::CurrentRuby.parse $stdin.read
+  ast = update_formula_field "url", options[:surl], ast
+  ast = update_formula_field "sha256", options[:ssum], ast
+  source = Unparser.unparse ast
+  $stdout.write source
+  $stdout.write "\n"
+  nil
+end
+
+def parse_opts
+  options = {}
+  OptionParser.new do |opts|
+    opts.banner = 'Modify a Homebrew Formula file'
+    opts.on(
+      '-sURL',
+      '--source-tar-url=URL',
+      'URL to the source tarball for compiled installation'
+    ) do |u|
+      options[:surl] = u
+    end
+    opts.on(
+      '-cCHECKSUM',
+      '--source-tar-checksum=CHECKSUM',
+      'sha256 checksum of the source tarball'
+    ) do |s|
+      options[:ssum] = s
+    end
+  end.parse!
+  if !options[:surl] || !options[:ssum] then
+    puts "Missing arguments. See --help for usage."
     exit 1
   end
-  ast = read_ast ARGV[0]
+  options
 end
 
-def read_ast filepath
-  sourceStr = IO.read(filepath)
-  Parser::CurrentRuby.parse_with_comments(sourceStr)
-end
-
-def write_ast filepath, ast, comments
-  sourceStr = Unparser.unparse(ast, comments)
-  IO.write(filepath, sourceStr)
-end
-
-def ast
-  a, c = read_ast "/Users/eason/pg/homebrew-tap/Formula/hack-assembler.rb"
-  a
-end
-
-
-####
-
-# update_formula_field :: Node -> String -> String -> Node
-def update_formula_field klass, field, value
+# update_formula_field :: String -> String -> Node -> Node
+def update_formula_field field, value, klass
   update(
     klass,
     [ by_type('begin'),
@@ -45,10 +55,6 @@ def update_formula_field klass, field, value
       by_type('str')],
     -> (n) { n.updated(nil, [value]) })
 end
-
-
-####
-
 
 # type Choice = Proc (Node -> Bool)
 # update :: Node -> [Choice] -> Proc (Node -> Node) -> Node
@@ -97,6 +103,5 @@ def by_type type
     n.type == type.to_sym
   }
 end
-
 
 main if __FILE__ == $0
