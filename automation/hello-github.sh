@@ -2,5 +2,5 @@
 
 curl \
     -H "Authorization: token $EASONCXZ_GITHUB_OAUTH_TOKEN" \
-    -i \
-    https://api.github.com/user
+    https://api.github.com/user \
+    | grep -q easoncxz
