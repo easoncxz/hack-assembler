@@ -40,7 +40,7 @@ main = do
     let shasum:_ = T.words shasumLine
     let formulaPath = "Formula/hack-assembler.rb"
     oldFormula <- fold (input formulaPath) Fold.list :: IO [Line]
-    let newFormula = inproc "../automation/update_formula.rb"
+    let newFormula = inproc "../automation/update_formula_sdist.rb"
           [ "-s", sourceTarUrl
           , "-c", shasum
           ] (select oldFormula) :: Shell Line
