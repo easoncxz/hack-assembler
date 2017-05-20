@@ -1,6 +1,12 @@
 
-os: osx
-osx_image: xcode6.4
+matrix:
+    include:
+        - os: osx
+          osx_image: xcode6.4
+        - os: osx
+          osx_image: xcode8
+        - os: osx
+          osx_image: xcode8.3
 
 language: generic
 
@@ -8,18 +14,14 @@ cache:
     directories:
         - $HOME/.stack/
 
-before_install:
+install:
     - ./automation/hello-github.sh
     - brew update --verbose
     - brew list --verbose haskell-stack || brew install --verbose haskell-stack
-
-install:
-    # A "failure" in our dependencies should be an "error" for us.
     - stack --no-terminal setup
     - stack --no-terminal test --only-dependencies
 
 script:
-    # We count out own failures as such.
     - stack --no-terminal test
 
 deploy:
