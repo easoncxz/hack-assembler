@@ -35,8 +35,9 @@ main = do
           ]
         sourceTarPath = T.pack $ "v" ++ MyVersion.asString version ++ ".tar.gz"
     proc "curl" ["-OL", sourceTarUrl] empty
-    Just shasum <- fmap lineToText <$>
+    Just shasumLine <- fmap lineToText <$>
       fold (inproc "shasum" ["-a", "256", sourceTarPath] empty) Fold.head
+    let shasum:_ = T.words shasumLine
     let formulaPath = "Formula/hack-assembler.rb"
     oldFormula <- fold (input formulaPath) Fold.list :: IO [Line]
     let newFormula = inproc "../automation/update_formula.rb"
