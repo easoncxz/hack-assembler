@@ -1,6 +1,8 @@
 
 module Automation.Misc where
 
+import qualified Crypto.Hash.SHA256 as SHA256
+import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Builder as BB
 import Data.Function ((&))
@@ -18,8 +20,10 @@ isInTravis = do
 -- | Calculate checksum in memory
 calcSha256 :: BL.ByteString -> T.Text
 calcSha256 bytes =
-  BB.lazyByteStringHex bytes
-    & BB.toLazyByteString
-    & BL.toStrict
-    & T.decodeUtf8  -- unsafe
+  bytes
+    & (SHA256.hashlazy     :: BL.ByteString -> B.ByteString)  -- hash
+    & (BB.byteStringHex    :: B.ByteString  -> BB.Builder)    -- read off bytes
+    & (BB.toLazyByteString :: BB.Builder    -> BL.ByteString)
+    & (BL.toStrict         :: BL.ByteString -> B.ByteString)
+    & (T.decodeUtf8        :: B.ByteString  -> T.Text)        -- technically unsafe
 

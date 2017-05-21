@@ -1,18 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Control.Monad
-import Test.QuickCheck
-import Test.HUnit
-
+import qualified Data.ByteString.Lazy as BL
 import Data.Set (Set)
 import qualified Data.Set as Set
+import Data.Text (Text)
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
+import Test.QuickCheck
+import Test.HUnit
 
 import Lib
 import qualified Model as Model
 import qualified Parser as Parser
 import qualified Formatter as Formatter
+import qualified Automation.Misc as Misc
 
 reverseList :: [Int] -> Bool
 reverseList xs =
@@ -20,66 +22,75 @@ reverseList xs =
 
 testClean :: Test
 testClean = TestCase $ do
-  assertEqual "" (Parser.clean "abc   // adsfasdf") "abc"
-  assertEqual "" (Parser.clean "   abc    ") "abc"
+  assertEqual ""
+   "abc"
+    (Parser.clean "abc   // adsfasdf")
+  assertEqual ""
+    "abc"
+    (Parser.clean "   abc    ")
 
 testParseLabel :: Test
 testParseLabel = TestCase $ do
   assertEqual "really a label"
-    (Parser.parseLabel "  (LOOP)   // start here")
     (Just . Model.LabelInstruction $ "LOOP")
+    (Parser.parseLabel "  (LOOP)   // start here")
   assertEqual "not a label at all"
+    Nothing
     (Parser.parseLabel " @lol  // not a label")
-    Nothing
   assertEqual "not a label either"
-    (Parser.parseLabel "(adf  // syntax error")
     Nothing
+    (Parser.parseLabel "(adf  // syntax error")
 
 testParseAddress :: Test
 testParseAddress = TestCase $ do
   assertEqual "a literal address"
-    (Parser.parseAddr "@1234  // lol")
     (Just . Model.AddrInstruction . Model.AddrLiteral $ 1234)
+    (Parser.parseAddr "@1234  // lol")
   assertEqual "a symbolic address"
-    (Parser.parseAddr "  @sum")
     (Just . Model.AddrInstruction . Model.AddrSymbol $ "sum")
+    (Parser.parseAddr "  @sum")
   forM_
     [ Parser.parseAddr "   D=A"
     , Parser.parseAddr " // nothing here"
     , Parser.parseAddr "(LOOP)"
     ] $ \c ->
-      assertEqual "not an address" c Nothing
+      assertEqual "not an address" Nothing c
 
 testFormatting :: Test
 testFormatting = TestCase $ do
   assertEqual "C-instruction expression"
-    (Formatter.formatCompExpr Model.DPlusOne)
     "011111"
+    (Formatter.formatCompExpr Model.DPlusOne)
   assertEqual "C-instruction destination"
-    (Formatter.formatDest $ Set.fromList [Model.RegA, Model.RegM])
     "101"
+    (Formatter.formatDest $ Set.fromList [Model.RegA, Model.RegM])
   assertEqual "C-instruction destination (2)"
-    (Formatter.formatDest $ Set.singleton Model.RegA)
     "100"
+    (Formatter.formatDest $ Set.singleton Model.RegA)
   assertEqual "C-instruction jump"
-    (Formatter.formatJump $ Set.fromList [EQ, GT])
     "011"
+    (Formatter.formatJump $ Set.fromList [EQ, GT])
   assertEqual "C-instruction jump (2)"
-    (Formatter.formatJump $ Set.fromList [GT])
     "001"
+    (Formatter.formatJump $ Set.fromList [GT])
   assertEqual "A-instruction"
+    (Just "0000000000000101")
     (Formatter.formatAddr
       Map.empty
       (Model.AddrLiteral 5))
-    (Just "0000000000000101")
   assertEqual "Whole C-instruction"
+    "1111110010110011"
     (Formatter.formatComp
        (Set.fromList [Model.RegA, Model.RegD])
        Model.RSubOne
        Model.UseM
        (Set.fromList [GT,EQ]))
-    "1111110010110011"
 
+testShasum :: Test
+testShasum = TestCase $ do
+  assertEqual "digest \"hello\""
+    ("2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824" :: Text)
+    (Misc.calcSha256 ("hello" :: BL.ByteString))
 
 main :: IO ()
 main = do
@@ -89,5 +100,6 @@ main = do
     , TestLabel "parse label" testParseLabel
     , TestLabel "parse address" testParseAddress
     , TestLabel "format instructions" testFormatting
+    , TestLabel "shasum -a 256" testShasum
     ]
   return ()
