@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE FlexibleContexts #-}
 
 module Automation.GitCommands where
 
@@ -8,6 +9,8 @@ import Data.Function ((&))
 import Data.Maybe (fromMaybe)
 import Data.Text (Text)
 import qualified Data.Text as T
+import Data.String.Conversions (cs)
+import System.Directory
 import System.Environment (lookupEnv)
 import Turtle hiding (fromText)
 import qualified Turtle
@@ -34,12 +37,17 @@ gitDiff = do
 withGitClone :: Text -> IO () -> IO ()
 withGitClone repoUrl inside = do
   let dir = "sub-repo" :: Text
+  clean dir
   ExitSuccess <- proc "git" ["clone", repoUrl, dir] empty
   with (pushd $ Turtle.fromText dir) $ \() -> do
     -- verify credentials/authorization
     ExitSuccess <- shell "git push" empty
     inside
-  rm (Turtle.fromText dir)
+  clean dir
+  where
+    clean dir = do
+      dirty <- doesPathExist (cs dir)
+      when dirty (removePathForcibly (cs dir))
 
 gitCommitAM :: IO ()
 gitCommitAM = do
