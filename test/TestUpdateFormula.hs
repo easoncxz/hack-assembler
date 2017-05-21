@@ -3,20 +3,28 @@
 
 module TestUpdateFormula where
 
+import Prelude hiding (FilePath)
+import Control.Monad.Managed
 import Data.Function ((&))
 import qualified Data.Text as T
 import Test.HUnit
 import Text.Heredoc (str)
-import Turtle (Line, textToLines)
+import Turtle
 
 import Automation.HomebrewFormula (updateFormula)
 
 
 testUpdateFormula :: Test
 testUpdateFormula = TestCase $ do
-  newFormula <- updateFormula "lol-url" "wat-checksum" oldFormula
-  assertEqual "The Ruby thing works" expected newFormula
+  go
+  with (pushd "automation") $ \() -> go
+  with (pushd "src") $ \() -> go
+
   where
+    go = do
+      newFormula <- updateFormula "lol-url" "wat-checksum" oldFormula
+      assertEqual "The Ruby thing works" expected newFormula
+
     oldFormula :: [Line]
     oldFormula =
       [str|class HackAssembler < Formula

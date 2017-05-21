@@ -11,3 +11,7 @@ Build and run:
 
     $ stack install
     $ hack-assembler < hello.asm > output.hack
+
+Test:
+    $ export HACK_ASSEMBLER_PROJ_DIR=$(pwd)     # accommodates a hack
+    $ stack test

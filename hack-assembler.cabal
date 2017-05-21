@@ -83,6 +83,7 @@ test-suite hack-assembler-test
                      , bytestring
                      , heredoc
                      , turtle
+                     , managed
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 
