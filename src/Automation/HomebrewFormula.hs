@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+module Automation.HomebrewFormula where
+
 import Prelude hiding (FilePath)
 import qualified Control.Foldl as Fold
 import qualified Data.Text as T
@@ -22,5 +24,3 @@ updateFormula sdistUrl sha256 = do
         (select oldFormula) :: Shell Line)
     Fold.list :: IO [Line]
   output formulaPath (select newFormula)
-
-main = putStrLn "No."
