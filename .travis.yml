@@ -16,7 +16,6 @@ cache:
 
 install:
     - ./automation/hello-github.sh
-    - brew update --verbose
     - brew list --verbose haskell-stack || brew install --verbose haskell-stack
     - stack --no-terminal setup
     - stack --no-terminal test --only-dependencies
@@ -27,7 +26,7 @@ script:
 deploy:
     - skip_cleanup: true
       provider: script
-      script: stack exec deploy-sdist-github -- hack-assembler.cabal
+      script: echo wip
       on:
           tags: true
 
