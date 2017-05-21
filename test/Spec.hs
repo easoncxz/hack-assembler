@@ -16,6 +16,8 @@ import qualified Parser as Parser
 import qualified Formatter as Formatter
 import qualified Automation.Misc as Misc
 
+import TestUpdateFormula
+
 reverseList :: [Int] -> Bool
 reverseList xs =
   xs == reverse (reverse xs)
@@ -101,5 +103,6 @@ main = do
     , TestLabel "parse address" testParseAddress
     , TestLabel "format instructions" testFormatting
     , TestLabel "shasum -a 256" testShasum
+    , TestLabel "update_formula.rb" testUpdateFormula
     ]
   return ()
