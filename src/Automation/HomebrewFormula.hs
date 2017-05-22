@@ -11,6 +11,8 @@ import qualified Filesystem.Path as Path
 import System.Environment
 import Turtle
 
+import Automation.Misc (localScript)
+
 overwriteSdist :: Text -> Text -> IO ()
 overwriteSdist sdistUrl sha256 =
   overwriteFormula $ localScript
@@ -34,16 +36,3 @@ overwriteFormula transform = do
   oldFormula <- fold (input formulaPath) Fold.list
   newFormula <- transform oldFormula
   output formulaPath (select newFormula)
-
--- Wrap around a local script
---
--- WARNING: To avoid being CWD-dependent, we're using a hack to
--- figure out where the Ruby scripts are. Should be OK, since this function
--- is run only as part of a CI process.
-localScript :: Text -> [Text] -> ([Line] -> IO [Line])
-localScript cmd args stdin = do
-  travisDirMS <- lookupEnv "TRAVIS_BUILD_DIR"
-  localDirMS <- lookupEnv "HACK_ASSEMBLER_PROJ_DIR"  -- HACK for use on local-dev!
-  let Just projectDirT = fmap T.pack $ travisDirMS <|> localDirMS
-  let scriptPathT = T.concat [ projectDirT , "/" , cmd]
-  fold (inproc scriptPathT args (select stdin)) Fold.list

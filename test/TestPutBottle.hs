@@ -12,7 +12,7 @@ import Test.HUnit
 import Text.Heredoc (str)
 import Turtle
 
-import Automation.HomebrewFormula (localScript)
+import Automation.Misc (localScript)
 import TestUpdateFormula (oldFormula)
 
 testPutBottleAdd :: Test

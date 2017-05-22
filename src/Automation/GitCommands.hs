@@ -15,7 +15,7 @@ import System.Environment (getEnv, lookupEnv)
 import Turtle hiding (fromText)
 import qualified Turtle
 
-import Automation.Misc (isInTravis)
+import Automation.Misc (isInTravis, localScript)
 import Automation.Github (oauthToken)
 
 tapRepoUrl :: IO Text
@@ -30,6 +30,11 @@ tapRepoUrl = do
       ]
   else
     cs <$> getEnv "EASONCXZ_HOMEBREW_LOCAL_TAP"
+
+hackAssemblerCommitId :: IO String
+hackAssemblerCommitId = do
+  stdout <- localScript "git" ["rev-parse", "--short", "HEAD"] []
+  return . T.unpack . lineToText . head $ stdout
 
 gitConfig :: IO ()
 gitConfig = do
@@ -67,11 +72,9 @@ withGitClone repoUrl action = do
 gitCommitAM :: IO ()
 gitCommitAM = do
   buildNum <- fromMaybe "local-build" <$> lookupEnv "TRAVIS_BUILD_NUMBER"
-  localCommitId <- fmap lineToText <$>
-    fold (inshell "git rev-parse --short HEAD" empty) Fold.head
-      :: IO (Maybe Text)
+  localCommitId <- hackAssemblerCommitId
   commitIdMaybe <- lookupEnv "TRAVIS_COMMIT"
-  let Just commitId = commitIdMaybe <|> fmap T.unpack localCommitId
+  let commitId = fromMaybe localCommitId $ commitIdMaybe
   ExitSuccess <- proc "git"
     [ "commit"
     , "-am"
