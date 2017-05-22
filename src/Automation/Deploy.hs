@@ -23,3 +23,11 @@ updateFormulaSdist version = do
     gitDiff
     gitCommitAM
     gitPush
+
+buildBottle :: Version -> IO ()
+buildBottle version = do
+  rUrl <- tapRepoUrl
+  ExitSuccess <- proc "brew" ["tap", "easoncxz/tap", rUrl] empty
+  ExitSuccess <- shell "brew install --verbose --build-bottle easoncxz/tap/hack-assembler" empty
+  ExitSuccess <- shell "brew bottle easoncxz/tap/hack-assembler" empty
+  return ()
