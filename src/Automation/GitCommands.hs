@@ -11,11 +11,25 @@ import Data.Text (Text)
 import qualified Data.Text as T
 import Data.String.Conversions (cs)
 import System.Directory
-import System.Environment (lookupEnv)
+import System.Environment (getEnv, lookupEnv)
 import Turtle hiding (fromText)
 import qualified Turtle
 
+import Automation.Misc (isInTravis)
 import Automation.Github (oauthToken)
+
+repoUrl :: IO Text
+repoUrl = do
+  token <- oauthToken
+  inTravis <- isInTravis
+  if inTravis then
+    return $ T.concat
+      [ "https://"
+      , token
+      , "@github.com/easoncxz/hack-assembler.git"
+      ]
+  else
+    cs <$> getEnv "EASONCXZ_HOMEBREW_LOCAL_TAP"
 
 gitConfig :: IO ()
 gitConfig = do
@@ -35,14 +49,15 @@ gitDiff = do
 
 -- | pushd you into a new repo, and cleanup afterwards
 withGitClone :: Text -> IO () -> IO ()
-withGitClone repoUrl inside = do
+withGitClone repoUrl action = do
   let dir = "sub-repo" :: Text
   clean dir
   ExitSuccess <- proc "git" ["clone", repoUrl, dir] empty
   with (pushd $ Turtle.fromText dir) $ \() -> do
     -- verify credentials/authorization
     ExitSuccess <- shell "git push" empty
-    inside
+    ExitSuccess <- shell "git checkout master" empty
+    action
   clean dir
   where
     clean dir = do

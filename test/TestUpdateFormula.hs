@@ -11,7 +11,7 @@ import Test.HUnit
 import Text.Heredoc (str)
 import Turtle
 
-import Automation.HomebrewFormula (updateFormula)
+import Automation.HomebrewFormula (updateFormulaSource)
 
 
 testUpdateFormula :: Test
@@ -22,7 +22,7 @@ testUpdateFormula = TestCase $ do
 
   where
     go = do
-      newFormula <- updateFormula "lol-url" "wat-checksum" oldFormula
+      newFormula <- updateFormulaSource "lol-url" "wat-checksum" oldFormula
       assertEqual "The Ruby thing works" expected newFormula
 
     oldFormula :: [Line]

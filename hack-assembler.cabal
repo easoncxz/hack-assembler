@@ -19,6 +19,7 @@ library
                      , Parser
                      , Formatter
                      , Model
+                     , Automation.Deploy
                      , Automation.Github
                      , Automation.GitCommands
                      , Automation.CabalVersion

@@ -15,3 +15,6 @@ Build and run:
 Test:
     $ export HACK_ASSEMBLER_PROJ_DIR=$(pwd)     # accommodates a hack
     $ stack test
+
+Configuring local environment for fiddling with:
+    $ export EASONCXZ_HOMEBREW_LOCAL_TAP="$HOME/your-homebrew-tap-repo"

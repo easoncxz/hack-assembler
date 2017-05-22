@@ -11,13 +11,21 @@ import qualified Filesystem.Path as Path
 import System.Environment
 import Turtle
 
--- | Wrapper around Ruby CLI
+-- | Touch the Formula file
+updateFormulaFile :: Text -> Text -> IO ()
+updateFormulaFile sdistUrl sdistSha256 = do
+  let formulaPath = "Formula/hack-assembler.rb"
+  oldFormula <- fold (input formulaPath) Fold.list
+  newFormula <- updateFormulaSource sdistUrl sdistSha256 oldFormula
+  output formulaPath (select newFormula)
+
+-- | Wrapper around Ruby CLI; actually pure
 --
 -- WARNING: To avoid being CWD-dependent, we're using a hack to
 -- figure out where the Ruby script is. Should be OK, since this function
 -- is run only as part of a CI process.
-updateFormula :: Text -> Text -> [Line] -> IO [Line]
-updateFormula sdistUrl sha256 oldFormula = do
+updateFormulaSource :: Text -> Text -> [Line] -> IO [Line]
+updateFormulaSource sdistUrl sha256 oldFormula = do
   travisDirMS <- lookupEnv "TRAVIS_BUILD_DIR"
   localDirMS <- lookupEnv "HACK_ASSEMBLER_PROJ_DIR"  -- HACK for use on local-dev!
   let Just projectDirS = travisDirMS <|> localDirMS
