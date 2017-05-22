@@ -8,7 +8,7 @@ import Turtle
 
 import Automation.GitCommands
 import Automation.Github
-import Automation.HomebrewFormula
+import Automation.HomebrewFormula (overwriteSdist, overwriteBottle)
 import Automation.Misc
 
 updateFormulaSdist :: Version -> IO ()
@@ -19,7 +19,7 @@ updateFormulaSdist version = do
   when inTravis gitConfig
   rUrl <- repoUrl
   withGitClone rUrl $ do
-    updateFormulaFile sUrl sSha256
+    overwriteSdist sUrl sSha256
     gitDiff
     gitCommitAM
     gitPush
