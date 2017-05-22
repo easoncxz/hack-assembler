@@ -18,15 +18,15 @@ import qualified Turtle
 import Automation.Misc (isInTravis)
 import Automation.Github (oauthToken)
 
-repoUrl :: IO Text
-repoUrl = do
+tapRepoUrl :: IO Text
+tapRepoUrl = do
   token <- oauthToken
   inTravis <- isInTravis
   if inTravis then
     return $ T.concat
       [ "https://"
       , token
-      , "@github.com/easoncxz/hack-assembler.git"
+      , "@github.com/easoncxz/homebrew-tap.git"
       ]
   else
     cs <$> getEnv "EASONCXZ_HOMEBREW_LOCAL_TAP"

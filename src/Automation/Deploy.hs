@@ -17,7 +17,7 @@ updateFormulaSdist version = do
   sSha256 <- sdistSha256 version
   inTravis <- isInTravis
   when inTravis gitConfig
-  rUrl <- repoUrl
+  rUrl <- tapRepoUrl
   withGitClone rUrl $ do
     overwriteSdist sUrl sSha256
     gitDiff
