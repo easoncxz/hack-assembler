@@ -7,7 +7,6 @@ import qualified Control.Foldl as Fold
 import Control.Lens
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Lazy as BL
-import qualified Data.ByteString.Builder as BB
 import Data.String.Conversions (ConvertibleStrings)
 import qualified Data.String.Conversions.Monomorphic as CS
 import Data.Text (Text)

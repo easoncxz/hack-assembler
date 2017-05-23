@@ -50,18 +50,22 @@ withGitClone repoUrl action = do
       dirty <- doesPathExist (cs dir)
       when dirty (removePathForcibly (cs dir))
 
-gitCommitAM :: IO ()
-gitCommitAM = do
-  buildNum <- fromMaybe "local-build" <$> lookupEnv "TRAVIS_BUILD_NUMBER"
+gitCommitAM :: Text -> IO ()
+gitCommitAM msg = do
+  buildNum <- T.pack . fromMaybe "local-build" <$>
+    lookupEnv "TRAVIS_BUILD_NUMBER"
   localCommitId <- hackAssemblerCommitId
   commitIdMaybe <- lookupEnv "TRAVIS_COMMIT"
-  let commitId = fromMaybe localCommitId $ commitIdMaybe
+  let commitId = T.pack $ fromMaybe localCommitId $ commitIdMaybe
   ExitSuccess <- proc "git"
     [ "commit"
     , "-am"
-    , T.pack $
-      "TravisCI/hack-assembler:"
-        ++ " Build #" ++ buildNum
-        ++ " (commit " ++ commitId ++ ")"
+    , T.concat
+        [ "TravisCI/hack-assembler:"
+        , " Build #", buildNum
+        , " (commit ", commitId, ")"
+        , "\n\n"
+        , msg
+        ]
     ] empty
   return ()

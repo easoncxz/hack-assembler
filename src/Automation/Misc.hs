@@ -3,6 +3,7 @@
 module Automation.Misc where
 
 import Control.Applicative
+import qualified Control.Exception as X
 import qualified Control.Foldl as Fold
 import qualified Crypto.Hash.SHA256 as SHA256
 import qualified Data.ByteString as B
@@ -27,8 +28,8 @@ isInTravis = do
   return (t /= Nothing)
 
 -- | "yosemite", "el_capitan", "sierra" etc.
-getOsxVersionName :: IO OSXVersion
-getOsxVersionName =
+getOSXVersionName :: IO OSXVersion
+getOSXVersionName =
   OSXVersion . T.pack <$> getEnv "OSX_VERSION_NAME"
 
 -- | Get the Git commit hash for the hack-assembler repo
@@ -76,3 +77,10 @@ localScript cmd args stdin = do
   let Just projectDirT = fmap T.pack $ travisDirMS <|> localDirMS
   let scriptPathT = T.concat [ projectDirT , "/" , cmd]
   Turtle.fold (Turtle.inproc scriptPathT args (Turtle.select stdin)) Fold.list
+
+retry :: Int -> IO r -> IO r
+retry times action = do
+    action `X.catch` handle action
+  where
+    handle :: IO r -> X.PatternMatchFail -> IO r
+    handle action _ = retry (times - 1) action

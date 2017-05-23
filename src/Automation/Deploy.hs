@@ -8,7 +8,7 @@ import Turtle
 
 import Automation.GitCommands
 import Automation.Github
-import Automation.HomebrewFormula (overwriteSdist, overwriteBottle)
+import Automation.HomebrewFormula
 import Automation.Misc
 
 updateFormulaSdist :: Version -> IO ()
@@ -22,15 +22,24 @@ updateFormulaSdist version = do
   withGitClone rUrl $ do
     overwriteSdist sUrl sSha256
     gitDiff
-    gitCommitAM
+    gitCommitAM "updating source tarball"
     gitPush
 
-buildBottle :: Version -> IO ()
-buildBottle version = do
+uploadBottle :: Version -> IO ()
+uploadBottle version = do
+  putStrLn "Pretend that the bottle has arrived at Bintray"
+
+updateFormulaBottle :: Version -> IO ()
+updateFormulaBottle version = do
   token <- oauthToken
   rUrl <- tapRepoUrl token
-  ExitSuccess <- shell "brew update --verbose" empty
-  ExitSuccess <- proc "brew" ["tap", "easoncxz/tap", rUrl] empty
-  ExitSuccess <- shell "brew install --verbose --build-bottle easoncxz/tap/hack-assembler" empty
-  ExitSuccess <- shell "brew bottle easoncxz/tap/hack-assembler" empty
-  return ()
+  buildBottle version token
+  uploadBottle version
+  osx@(OSXVersion osxT) <- getOSXVersionName
+  let path = bottlePath version osx
+  sha256 <- bottleSha256 path
+  withGitClone rUrl $ do
+    overwriteBottle osx sha256
+    gitDiff
+    gitCommitAM ("updating bottle for osx " <> osxT)
+    gitPush
