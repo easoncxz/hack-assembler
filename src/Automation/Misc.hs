@@ -11,14 +11,40 @@ import qualified Data.ByteString.Builder as BB
 import Data.Function ((&))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
-import System.Environment (lookupEnv)
+import System.Environment (getEnv, lookupEnv)
 import qualified Turtle
+
+newtype OAuthToken = OAuthToken String
 
 -- | We're running on Travis, yes?
 isInTravis :: IO Bool
 isInTravis = do
   t <- lookupEnv "TRAVIS"
   return (t /= Nothing)
+
+-- | "yosemite", "el_capitan", "sierra" etc.
+getOsxVersionName :: IO String
+getOsxVersionName =
+  getEnv "OSX_VERSION_NAME"
+
+-- | Get the Git commit hash for the hack-assembler repo
+hackAssemblerCommitId :: IO String
+hackAssemblerCommitId = do
+  stdout <- localScript "git" ["rev-parse", "--short", "HEAD"] []
+  return . T.unpack . Turtle.lineToText . head $ stdout
+
+-- | URL to the Git repo holding our Homebrew Tap
+tapRepoUrl :: OAuthToken -> IO T.Text
+tapRepoUrl (OAuthToken token) = do
+  inTravis <- isInTravis
+  if inTravis then
+    return $ T.concat
+      [ "https://"
+      , T.pack token
+      , "@github.com/easoncxz/homebrew-tap.git"
+      ]
+  else
+    T.pack <$> getEnv "EASONCXZ_HOMEBREW_LOCAL_TAP"
 
 -- | Calculate checksum in memory
 calcSha256 :: BL.ByteString -> T.Text

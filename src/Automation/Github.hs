@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleContexts #-}
 
 module Automation.Github where
 
@@ -20,7 +19,7 @@ import System.Environment (getEnv)
 import Turtle
 import qualified Network.Wreq as Wreq
 
-import Automation.Misc (calcSha256)
+import Automation.Misc (calcSha256, OAuthToken(..))
 import qualified Automation.CabalVersion as CV
 
 -- | URL to the tarball Github bundles for us
@@ -39,7 +38,7 @@ sdistSha256 version = do
   let bytes = resp ^. Wreq.responseBody :: BL.ByteString
   return (calcSha256 bytes)
 
-oauthToken :: (ConvertibleStrings String a) => IO a
+oauthToken :: IO OAuthToken
 oauthToken =
-  CS.fromString <$> getEnv "EASONCXZ_GITHUB_OAUTH_TOKEN_v2"
+  OAuthToken <$> getEnv "EASONCXZ_GITHUB_OAUTH_TOKEN_v2"
 

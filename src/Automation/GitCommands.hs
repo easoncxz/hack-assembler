@@ -15,26 +15,7 @@ import System.Environment (getEnv, lookupEnv)
 import Turtle hiding (fromText)
 import qualified Turtle
 
-import Automation.Misc (isInTravis, localScript)
-import Automation.Github (oauthToken)
-
-tapRepoUrl :: IO Text
-tapRepoUrl = do
-  token <- oauthToken
-  inTravis <- isInTravis
-  if inTravis then
-    return $ T.concat
-      [ "https://"
-      , token
-      , "@github.com/easoncxz/homebrew-tap.git"
-      ]
-  else
-    cs <$> getEnv "EASONCXZ_HOMEBREW_LOCAL_TAP"
-
-hackAssemblerCommitId :: IO String
-hackAssemblerCommitId = do
-  stdout <- localScript "git" ["rev-parse", "--short", "HEAD"] []
-  return . T.unpack . lineToText . head $ stdout
+import Automation.Misc (isInTravis, localScript, hackAssemblerCommitId)
 
 gitConfig :: IO ()
 gitConfig = do

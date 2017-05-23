@@ -6,12 +6,14 @@ import Prelude hiding (FilePath)
 import qualified Control.Foldl as Fold
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
+import Data.Version
 import Filesystem.Path ((</>))
 import qualified Filesystem.Path as Path
 import System.Environment
 import Turtle
 
 import Automation.Misc (localScript)
+import qualified Automation.CabalVersion as MyVersion
 
 overwriteSdist :: Text -> Text -> IO ()
 overwriteSdist sdistUrl sha256 =
@@ -36,3 +38,11 @@ overwriteFormula transform = do
   oldFormula <- fold (input formulaPath) Fold.list
   newFormula <- transform oldFormula
   output formulaPath (select newFormula)
+
+-- | Also will be part of the bottle URL
+-- See https://github.com/Homebrew/legacy-homebrew/issues/31812
+bottleFilename :: Version -> String -> String
+bottleFilename version osxVersionName =
+  "hack-assembler-" ++ MyVersion.asString version
+    ++ "." ++ osxVersionName
+    ++ ".bottle.1.tar.gz"

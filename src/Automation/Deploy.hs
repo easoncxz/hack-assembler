@@ -17,7 +17,8 @@ updateFormulaSdist version = do
   sSha256 <- sdistSha256 version
   inTravis <- isInTravis
   when inTravis gitConfig
-  rUrl <- tapRepoUrl
+  token <- oauthToken
+  rUrl <- tapRepoUrl token
   withGitClone rUrl $ do
     overwriteSdist sUrl sSha256
     gitDiff
@@ -26,7 +27,8 @@ updateFormulaSdist version = do
 
 buildBottle :: Version -> IO ()
 buildBottle version = do
-  rUrl <- tapRepoUrl
+  token <- oauthToken
+  rUrl <- tapRepoUrl token
   ExitSuccess <- shell "brew update --verbose" empty
   ExitSuccess <- proc "brew" ["tap", "easoncxz/tap", rUrl] empty
   ExitSuccess <- shell "brew install --verbose --build-bottle easoncxz/tap/hack-assembler" empty
