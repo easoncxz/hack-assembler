@@ -13,7 +13,7 @@ import Automation.Misc
 
 updateFormulaSdist :: Version -> IO ()
 updateFormulaSdist version = do
-  let sUrl = cs $ sdistUrl version
+  let sUrl = sdistUrl version
   sSha256 <- sdistSha256 version
   inTravis <- isInTravis
   when inTravis gitConfig

@@ -12,23 +12,23 @@ import qualified Filesystem.Path as Path
 import System.Environment
 import Turtle
 
-import Automation.Misc (localScript)
+import Automation.Misc
 import qualified Automation.CabalVersion as MyVersion
 
-overwriteSdist :: Text -> Text -> IO ()
-overwriteSdist sdistUrl sha256 =
+overwriteSdist :: SdistUrl -> SdistSha256 -> IO ()
+overwriteSdist (SdistUrl sdistUrl) (SdistSha256 sha256) =
   overwriteFormula $ localScript
     "automation/update_formula_sdist.rb"
-    [ "--source-tar-url",       sdistUrl
-    , "--source-tar-checksum",  sha256
+    [ "--source-tar-url", sdistUrl
+    , "--source-tar-checksum", sha256
     ]
 
-overwriteBottle :: Text -> Text -> IO ()
-overwriteBottle osVersion bottleSha256 =
+overwriteBottle :: OSXVersion -> BottleSha256 -> IO ()
+overwriteBottle (OSXVersion osx) (BottleSha256 sha256) =
   overwriteFormula $ localScript
     "automation/update_formula_bottle.rb"
-    [ "--os-version", osVersion
-    , "--bottle-tar-checksum", bottleSha256
+    [ "--os-version", osx
+    , "--bottle-tar-checksum", sha256
     ]
 
 -- | Overwrite the Formula file
@@ -41,8 +41,10 @@ overwriteFormula transform = do
 
 -- | Also will be part of the bottle URL
 -- See https://github.com/Homebrew/legacy-homebrew/issues/31812
-bottleFilename :: Version -> String -> String
-bottleFilename version osxVersionName =
-  "hack-assembler-" ++ MyVersion.asString version
-    ++ "." ++ osxVersionName
-    ++ ".bottle.1.tar.gz"
+bottleFilename :: Version -> OSXVersion -> Text
+bottleFilename version (OSXVersion osx) =
+  T.concat
+    [ "hack-assembler-", T.pack $ MyVersion.asString version
+    , ".", osx
+    , ".bottle.1.tar.gz"
+    ]

@@ -14,7 +14,11 @@ import qualified Data.Text.Encoding as T
 import System.Environment (getEnv, lookupEnv)
 import qualified Turtle
 
-newtype OAuthToken = OAuthToken String
+newtype OAuthToken = OAuthToken T.Text
+newtype OSXVersion = OSXVersion T.Text
+newtype SdistUrl = SdistUrl T.Text
+newtype SdistSha256 = SdistSha256 T.Text
+newtype BottleSha256 = BottleSha256 T.Text
 
 -- | We're running on Travis, yes?
 isInTravis :: IO Bool
@@ -23,9 +27,9 @@ isInTravis = do
   return (t /= Nothing)
 
 -- | "yosemite", "el_capitan", "sierra" etc.
-getOsxVersionName :: IO String
+getOsxVersionName :: IO OSXVersion
 getOsxVersionName =
-  getEnv "OSX_VERSION_NAME"
+  OSXVersion . T.pack <$> getEnv "OSX_VERSION_NAME"
 
 -- | Get the Git commit hash for the hack-assembler repo
 hackAssemblerCommitId :: IO String
@@ -40,7 +44,7 @@ tapRepoUrl (OAuthToken token) = do
   if inTravis then
     return $ T.concat
       [ "https://"
-      , T.pack token
+      , token
       , "@github.com/easoncxz/homebrew-tap.git"
       ]
   else
