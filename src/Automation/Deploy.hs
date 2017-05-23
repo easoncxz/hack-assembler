@@ -10,6 +10,7 @@ import Automation.GitCommands
 import Automation.Github
 import Automation.HomebrewFormula
 import Automation.Misc
+import Automation.Bintray
 
 updateFormulaSdist :: Version -> IO ()
 updateFormulaSdist version = do
@@ -25,18 +26,14 @@ updateFormulaSdist version = do
     gitCommitAM "updating source tarball"
     gitPush
 
-uploadBottle :: Version -> IO ()
-uploadBottle version = do
-  putStrLn "Pretend that the bottle has arrived at Bintray"
-
 updateFormulaBottle :: Version -> IO ()
 updateFormulaBottle version = do
   token <- oauthToken
   rUrl <- tapRepoUrl token
-  buildBottle version token
-  uploadBottle version
   osx@(OSXVersion osxT) <- getOSXVersionName
   let path = bottlePath version osx
+  buildBottle version token
+  uploadBottle version path
   sha256 <- bottleSha256 path
   withGitClone rUrl $ do
     overwriteBottle osx sha256

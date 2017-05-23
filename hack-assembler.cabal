@@ -25,6 +25,7 @@ library
                      , Automation.CabalVersion
                      , Automation.HomebrewFormula
                      , Automation.Misc
+                     , Automation.Bintray
   build-depends:       base >= 4.7 && < 5
                      , text
                      , containers

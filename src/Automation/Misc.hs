@@ -20,6 +20,7 @@ newtype OSXVersion = OSXVersion T.Text
 newtype SdistUrl = SdistUrl T.Text
 newtype SdistSha256 = SdistSha256 T.Text
 newtype BottleSha256 = BottleSha256 T.Text
+newtype BottlePath = BottlePath T.Text
 
 -- | We're running on Travis, yes?
 isInTravis :: IO Bool

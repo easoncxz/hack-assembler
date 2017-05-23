@@ -46,24 +46,20 @@ overwriteFormula transform = do
 -- | Where is the bottle on disk?
 -- Also will be part of the bottle URL.
 -- See https://github.com/Homebrew/legacy-homebrew/issues/31812
-bottlePath :: Version -> OSXVersion -> FilePath
+bottlePath :: Version -> OSXVersion -> BottlePath
 bottlePath version (OSXVersion osx) =
-  fromText . T.concat $
+  BottlePath . T.concat $
     [ "hack-assembler-", T.pack $ MyVersion.asString version
     , ".", osx
     , ".bottle.1.tar.gz"
     ]
 
 -- | Calculate checksum of file
-bottleSha256 :: FilePath -> IO BottleSha256
-bottleSha256 path =
-  case T.unpack <$> toText path of
-    Left msg ->
-      error . T.unpack $ msg
-    Right pathS -> do
-      bytes <- BL.readFile pathS
-      let sha256 = SHA256.hashlazy bytes
-      return . BottleSha256 . T.decodeUtf8 $ sha256
+bottleSha256 :: BottlePath -> IO BottleSha256
+bottleSha256 (BottlePath pathT) = do
+  bytes <- BL.readFile (T.unpack pathT)
+  let sha256 = SHA256.hashlazy bytes
+  return . BottleSha256 . T.decodeUtf8 $ sha256
 
 -- | Use `brew bottle` etc. to create a bdist tarball
 buildBottle :: Version -> OAuthToken -> IO ()
