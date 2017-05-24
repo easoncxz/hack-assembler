@@ -62,12 +62,13 @@ bottleSha256 (BottlePath pathT) = do
   return . BottleSha256 . T.decodeUtf8 $ sha256
 
 -- | Use `brew bottle` etc. to create a bdist tarball
-buildBottle :: Version -> OAuthToken -> IO ()
+buildBottle :: Version -> OAuthToken -> IO BottlePath
 buildBottle version token = do
   rUrl <- tapRepoUrl token
   ExitSuccess <- shell "brew update --verbose" empty
   ExitSuccess <- proc "brew" ["tap", "easoncxz/tap", rUrl] empty
   ExitSuccess <- shell "brew install --verbose --build-bottle easoncxz/tap/hack-assembler" empty
   ExitSuccess <- shell "brew bottle easoncxz/tap/hack-assembler" empty
-  return ()
+  osx <- getOSXVersionName
+  return $ bottlePath version osx
 

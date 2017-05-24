@@ -3,10 +3,13 @@ matrix:
     include:
         - os: osx
           osx_image: xcode6.4
+          env: OSX_VERSION_NAME=yosemite
         - os: osx
           osx_image: xcode8
+          env: OSX_VERSION_NAME=el_capitan
         - os: osx
           osx_image: xcode8.3
+          env: OSX_VERSION_NAME=sierra
 
 language: generic
 
@@ -26,7 +29,7 @@ script:
 deploy:
     - skip_cleanup: true
       provider: script
-      script: echo wip
+      script: ./automation/deploy.sh
       on:
           tags: true
 

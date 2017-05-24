@@ -30,12 +30,11 @@ updateFormulaBottle :: Version -> IO ()
 updateFormulaBottle version = do
   token <- oauthToken
   rUrl <- tapRepoUrl token
-  osx@(OSXVersion osxT) <- getOSXVersionName
-  let path = bottlePath version osx
-  buildBottle version token
+  path <- buildBottle version token
   uploadBottle version path
   sha256 <- bottleSha256 path
   withGitClone rUrl $ do
+    osx@(OSXVersion osxT) <- getOSXVersionName
     overwriteBottle osx sha256
     gitDiff
     gitCommitAM ("updating bottle for osx " <> osxT)

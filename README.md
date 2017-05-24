@@ -12,9 +12,17 @@ Build and run:
     $ stack install
     $ hack-assembler < hello.asm > output.hack
 
-Test:
+Run tests:
+
     $ export HACK_ASSEMBLER_PROJ_DIR=$(pwd)     # accommodates a hack
     $ stack test
 
-Configuring local environment for fiddling with:
-    $ export EASONCXZ_HOMEBREW_LOCAL_TAP="$HOME/your-homebrew-tap-repo"
+Configuring TravisCI:
+
+    $ export OSX_VERSION_NAME="yosemite"    # or "el_capitan"; formatted like inside a Homebrew Formula
+    $ export EASONCXZ_GITHUB_OAUTH_TOKEN='very-secret'
+    $ export EASONCXZ_BINTRAY_API_KEY='quite-secret'
+
+Configuring local-dev:
+
+    $ export EASONCXZ_HOMEBREW_LOCAL_TAP="file://$HOME/your-homebrew-tap-repo"
