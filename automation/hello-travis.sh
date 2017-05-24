@@ -5,8 +5,8 @@ set -ex
 pwd
 whoami
 env | sort
-ruby --version
-rvm --version
-gem --version
-bundle --version
-openssl version -a
+which ruby    && ruby --version
+which rvm     && rvm --version
+which gem     && gem --version
+which bundle  && bundle --version
+which openssl && openssl version -a
