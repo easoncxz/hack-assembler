@@ -16,9 +16,16 @@ language: generic
 cache:
     directories:
         - $HOME/.stack/
+        - $HOME/.rvm/
 
 install:
+    - ./automation/hello-travis.sh
     - ./automation/hello-github.sh
+    - rvm osx-ssl-certs update all  # https://github.com/rubygems/rubygems.org/issues/613
+    - rvm install 2.4
+    - rvm use 2.4
+    - gem install bundler
+    - ./automation/hello-travis.sh
     - bundle install
     - brew list haskell-stack 2> /dev/null || brew install --verbose haskell-stack
     - stack --no-terminal setup
