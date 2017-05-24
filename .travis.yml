@@ -21,14 +21,22 @@ cache:
 install:
     - ./automation/hello-travis.sh
     - ./automation/hello-github.sh
+
+      # http://railsapps.github.io/openssl-certificate-verify-failed.html
+    - brew list openssl 2> /dev/null || brew install --verbose openssl
+    - brew link --force openssl
+    - brew install --verbose curl-ca-bundle
+
     - rvm get latest
     - rvm osx-ssl-certs update all  # https://github.com/rubygems/rubygems.org/issues/613
     - rvm install ruby-2.1.8
     - rvm use ruby-2.1.8
+    - rvm osx-ssl-certs update all  # how about a second time?
     - gem update --system   # https://stackoverflow.com/questions/10246023/
     - gem install bundler
     - ./automation/hello-travis.sh
     - travis_retry bundle install
+
     - brew list haskell-stack 2> /dev/null || brew install --verbose haskell-stack
     - stack --no-terminal setup
     - stack --no-terminal test --only-dependencies
@@ -39,7 +47,10 @@ script:
 deploy:
     - skip_cleanup: true
       provider: script
-      script: ./automation/deploy.sh
+      script: |
+        set -ex
+        stack exec deploy-hack-assembler -- update-sdist
+        stack exec deploy-hack-assembler -- update-bottle
       on:
           tags: true
 

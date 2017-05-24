@@ -9,3 +9,4 @@ ruby --version
 rvm --version
 gem --version
 bundle --version
+openssl version -a
