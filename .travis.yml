@@ -27,7 +27,7 @@ install:
     - rvm use ruby-2.1.8
     - gem install bundler
     - ./automation/hello-travis.sh
-    - bundle install
+    - travis_retry bundle install
     - brew list haskell-stack 2> /dev/null || brew install --verbose haskell-stack
     - stack --no-terminal setup
     - stack --no-terminal test --only-dependencies
