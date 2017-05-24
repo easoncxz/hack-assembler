@@ -19,7 +19,8 @@ cache:
 
 install:
     - ./automation/hello-github.sh
-    - brew list --verbose haskell-stack || brew install --verbose haskell-stack
+    - bundle install
+    - brew list haskell-stack 2> /dev/null || brew install --verbose haskell-stack
     - stack --no-terminal setup
     - stack --no-terminal test --only-dependencies
 
