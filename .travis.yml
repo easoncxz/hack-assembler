@@ -21,9 +21,10 @@ cache:
 install:
     - ./automation/hello-travis.sh
     - ./automation/hello-github.sh
+    - rvm get latest
     - rvm osx-ssl-certs update all  # https://github.com/rubygems/rubygems.org/issues/613
-    - rvm install 2.4
-    - rvm use 2.4
+    - rvm install ruby-2.1.8
+    - rvm use ruby-2.1.8
     - gem install bundler
     - ./automation/hello-travis.sh
     - bundle install
