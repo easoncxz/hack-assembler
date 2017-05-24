@@ -25,6 +25,7 @@ install:
     - rvm osx-ssl-certs update all  # https://github.com/rubygems/rubygems.org/issues/613
     - rvm install ruby-2.1.8
     - rvm use ruby-2.1.8
+    - gem update --system   # https://stackoverflow.com/questions/10246023/
     - gem install bundler
     - ./automation/hello-travis.sh
     - travis_retry bundle install
