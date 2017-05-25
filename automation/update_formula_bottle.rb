@@ -7,7 +7,7 @@ require_relative 'update_formula.rb'
 def main
   include FormulaManip
   options = parse_opts
-  old = Parser::CurrentRuby.parse $stdin.read
+  old = Parser::Ruby21.parse $stdin.read
   new = put_bottle options[:os], options[:bsum], old
   source = Unparser.unparse new
   $stdout.write source

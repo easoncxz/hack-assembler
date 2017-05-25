@@ -1,5 +1,5 @@
 
-require 'parser/current'
+require 'parser/ruby21'
 require 'unparser'
 
 Parser::Builders::Default.emit_lambda = true

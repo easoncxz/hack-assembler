@@ -36,7 +36,7 @@ getOSXVersionName =
 -- | Get the Git commit hash for the hack-assembler repo
 hackAssemblerCommitId :: IO String
 hackAssemblerCommitId = do
-  stdout <- localScript "git" ["rev-parse", "--short", "HEAD"] []
+  stdout <- localScript "automation/git-head.sh" [] []
   return . T.unpack . Turtle.lineToText . head $ stdout
 
 -- | URL to the Git repo holding our Homebrew Tap

@@ -7,7 +7,7 @@ require_relative 'update_formula.rb'
 def main
   include FormulaManip
   options = parse_opts
-  ast = Parser::CurrentRuby.parse $stdin.read
+  ast = Parser::Ruby21.parse $stdin.read
   ast = update_formula_field "url", options[:surl], ast
   ast = update_formula_field "sha256", options[:ssum], ast
   source = Unparser.unparse ast
