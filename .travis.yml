@@ -22,7 +22,7 @@ install:
     - ./automation/hello-travis.sh
     - ./automation/hello-github.sh
 
-    - which gpg2 || brew install gnupg
+    - "which gpg2 || ( which gpg && brew upgrade gnupg ) || brew install gnupg"
     - gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
     - travis_retry rvm get latest
     - rvm osx-ssl-certs update all  # https://github.com/rubygems/rubygems.org/issues/613
