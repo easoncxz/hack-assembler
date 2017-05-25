@@ -22,6 +22,8 @@ install:
     - ./automation/hello-travis.sh
     - ./automation/hello-github.sh
 
+    - which gpg2 || brew install gnupg
+    - gpg2 --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
     - travis_retry rvm get latest
     - rvm osx-ssl-certs update all  # https://github.com/rubygems/rubygems.org/issues/613
     - rvm install ruby-2.1.8
@@ -32,7 +34,7 @@ install:
     - travis_retry gem install bundler
     - travis_retry bundle install
 
-    - brew list haskell-stack 2> /dev/null || brew install --verbose haskell-stack
+    - which stack || brew install --verbose haskell-stack
     - stack --no-terminal setup
     - stack --no-terminal test --only-dependencies
 
@@ -42,10 +44,7 @@ script:
 deploy:
     - skip_cleanup: true
       provider: script
-      script: |
-        set -ex
-        stack exec deploy-hack-assembler -- update-sdist
-        stack exec deploy-hack-assembler -- update-bottle
+      script: ./automation/deploy.sh
       on:
           tags: true
 
