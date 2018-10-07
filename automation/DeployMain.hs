@@ -2,23 +2,20 @@
 
 module Main where
 
+import Automation.CabalVersion (readVersion)
+import qualified Automation.CabalVersion as CabalVersion
 import qualified Data.Text.IO as T
 import Turtle
-import Automation.CabalVersion (readVersion)
-import Automation.Deploy
 
 parser :: Parser Text
-parser =
-  argText "COMMAND" "update-sdist | update-bottle"
+parser = argText "COMMAND" "version-as-tag | version-as-string"
 
 main = do
-  command <- options "Run a deployment step" parser
+  command <- options "Retrieve version from Cabal file" parser
   pkgVersion <- readVersion "hack-assembler.cabal"
   case command of
-    "update-sdist" ->
-      updateFormulaSdist pkgVersion
-    "update-bottle" ->
-      updateFormulaBottle pkgVersion
+    "version-as-tag" -> putStrLn (CabalVersion.asTag pkgVersion)
+    "version-as-string" -> putStrLn (CabalVersion.asString pkgVersion)
     o -> do
       T.putStrLn $ "Unrecognized command: " <> o
       exit (ExitFailure 1)

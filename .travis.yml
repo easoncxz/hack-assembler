@@ -3,13 +3,13 @@ matrix:
     include:
         - os: osx
           osx_image: xcode6.4
-          env: OSX_VERSION_NAME=yosemite
+          #yosemite
         - os: osx
           osx_image: xcode8
-          env: OSX_VERSION_NAME=el_capitan
+          #el_capitan
         - os: osx
           osx_image: xcode8.3
-          env: OSX_VERSION_NAME=sierra
+          #sierra
 
 language: generic
 
@@ -19,24 +19,7 @@ cache:
         - $HOME/.rvm/
 
 install:
-    - ./automation/hello-travis.sh
-    - ./automation/hello-github.sh
-
-    - brew install gnupg || brew upgrade gnupg || which gpg2
-    - gpg2 --keyserver hkp://pgp.mit.edu --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-    - travis_retry rvm get latest
-    - rvm osx-ssl-certs update all  # https://github.com/rubygems/rubygems.org/issues/613
-    - rvm install ruby-2.1.8
-    - rvm use ruby-2.1.8
-    - rvm osx-ssl-certs update all  # how about a second time?
-    - travis_retry gem update --system   # https://stackoverflow.com/questions/10246023/
-    - ./automation/hello-travis.sh
-    - travis_retry gem install bundler
-    - travis_retry bundle install
-
-    - which stack || brew install --verbose haskell-stack
-    - stack --no-terminal setup
-    - stack --no-terminal test --only-dependencies
+    - ./automation/travis-install.sh
 
 script:
     - stack --no-terminal test
@@ -44,7 +27,7 @@ script:
 deploy:
     - skip_cleanup: true
       provider: script
-      script: ./automation/deploy.sh
+      script: ./automation/travis-deploy.sh
       on:
           tags: true
 
