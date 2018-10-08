@@ -14,7 +14,7 @@ script:
 deploy:
     - skip_cleanup: true
       provider: script
-      script: echo "Pretend we're building bottles here."
+      script: echo "Pretend we're building and uploading bottles here."
       on:
           tags: true
 
@@ -39,13 +39,9 @@ jobs:
         - stage: "Now deploy!"
           os: linux
           sudo: false
-          install: echo "nothing to install"
-          script: hostname && pwd
-          before_deploy:
-              - echo "Travis before_deploy step (in the deploy stage) here."
-              - pwd
-              - hostname | tee deploy-preparation.txt
+          install: echo "Nothing to install; binaries should already be on Bintray."
+          script: echo "Nothing to test; binaries should already be on Bintray."
           deploy:
               provider: script
-              script: echo "Pretend we're gathering and publishing bottles here." && cat deploy-preparation.txt
+              script: echo "Pretend we're gathering and publishing bottles here."
               skip_cleanup: true
