@@ -15,7 +15,8 @@ set -x  # Be noisy
 
 # travis_retry gem install homebrew_automation
 
-rvm use ruby-2.3    # brew.rb: "Homebrew must be run under Ruby 2.3!"
+#rvm use ruby-2.3    # brew.rb: "Homebrew must be run under Ruby 2.3!"
+
 which stack || brew install --verbose haskell-stack
 stack --no-terminal setup
 stack --no-terminal test --only-dependencies

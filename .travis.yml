@@ -1,25 +1,9 @@
 
-matrix:
-    include:
-        #- os: osx
-        #  osx_image: xcode6.4
-        #  #yosemite
-        - os: osx
-          osx_image: xcode8
-          #el_capitan
-        - os: osx
-          osx_image: xcode9.2
-          #sierra
-        - os: osx
-          osx_image: xcode10
-          #high_sierra
-
-language: generic
+language: minimal
 
 cache:
     directories:
         - $HOME/.stack/
-        - $HOME/.rvm/
 
 install:
     - ./automation/travis-install.sh
@@ -30,7 +14,38 @@ script:
 deploy:
     - skip_cleanup: true
       provider: script
-      script: ./automation/travis-deploy.sh
+      script: echo "Pretend we're building bottles here."
       on:
           tags: true
 
+jobs:
+    include:
+
+        - stage: test
+          os: osx
+          osx_image: xcode8
+          # macOS 10.11 el_capitan
+
+        - stage: test
+          os: osx
+          osx_image: xcode9.2
+          # macOS 10.12 sierra
+
+        - stage: test
+          os: osx
+          osx_image: xcode10
+          # macOS 10.13 high_sierra
+
+        - stage: "Now deploy!"
+          os: linux
+          sudo: false
+          install: echo "nothing to install"
+          script: hostname && pwd
+          before_deploy:
+              - echo "Travis before_deploy step (in the deploy stage) here."
+              - pwd
+              - hostname | tee deploy-preparation.txt
+          deploy:
+              provider: script
+              script: echo "Pretend we're gathering and publishing bottles here." && cat deploy-preparation.txt
+              skip_cleanup: true
