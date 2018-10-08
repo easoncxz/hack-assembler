@@ -17,6 +17,9 @@ set -x  # Be noisy
 
 #rvm use ruby-2.3    # brew.rb: "Homebrew must be run under Ruby 2.3!"
 
+brew doctor || true
+brew update || true
 which stack || brew install --verbose haskell-stack
+
 stack --no-terminal setup
 stack --no-terminal test --only-dependencies
