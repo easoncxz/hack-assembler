@@ -1,9 +1,9 @@
 
 matrix:
     include:
-        - os: osx
-          osx_image: xcode6.4
-          #yosemite
+        #- os: osx
+        #  osx_image: xcode6.4
+        #  #yosemite
         - os: osx
           osx_image: xcode8
           #el_capitan
@@ -16,7 +16,6 @@ language: generic
 cache:
     directories:
         - $HOME/.stack/
-        - $HOME/.rvm/
 
 install:
     - ./automation/travis-install.sh
