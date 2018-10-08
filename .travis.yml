@@ -1,9 +1,10 @@
 
-language: minimal
+language: generic
 
 cache:
     directories:
         - $HOME/.stack/
+        - $HOME/.rvm/
 
 install:
     - ./automation/travis-install.sh
