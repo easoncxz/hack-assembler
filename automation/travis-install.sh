@@ -8,8 +8,10 @@ brew doctor || true
 brew update || true
 
 # ... so that we can install GnuPG, ...
-brew install gnupg || brew upgrade gnupg || which gpg2
-gpg2 --keyserver hkp://pgp.mit.edu --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+brew install gnupg || brew upgrade gnupg || which gpg
+echo 'Expecting we have GnuPG v2.x'
+gpg --version
+gpg --keyserver hkp://pgp.mit.edu --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 
 # ... so that we can verify the new RVM binary when we download it, ...
 rvm get latest
