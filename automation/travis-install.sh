@@ -4,8 +4,8 @@ set -e  # Fail fast
 set -x  # Be noisy
 
 # Bring Homebrew up to date, ...
-brew doctor || true
-brew update || true
+#brew doctor || true
+#brew update || true
 
 # ... so that we can install GnuPG, ...
 #brew install gnupg || brew upgrade gnupg || which gpg
@@ -31,6 +31,8 @@ gem install homebrew_automation -v 0.0.8
 homebrew_automation.rb help
 
 # And then install our Haskell build tool.
+brew doctor || true
+brew update || true
 which stack || brew install --verbose haskell-stack
 
 # Download a version of GHC and compile all our Haskell dependencies. This takes ages.
