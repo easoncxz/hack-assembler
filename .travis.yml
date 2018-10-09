@@ -5,6 +5,7 @@ cache:
     directories:
         - $HOME/.stack/
         - $HOME/.rvm/
+        - $TRAVIS_BUILD_DIR/.stack-work
 
 install:
     - uname -a
