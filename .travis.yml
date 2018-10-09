@@ -1,5 +1,5 @@
 
-language: ruby
+language: generic
 
 cache:
     directories:
@@ -7,7 +7,36 @@ cache:
         - $HOME/.rvm/
 
 install:
-    - ./automation/travis-install.sh
+    - uname -a
+    - sw_vers
+
+    - brew --version
+    - brew update || true
+    - brew doctor || true
+    - brew list --versions
+    - brew bundle
+    - brew bundle cleanup --force || true
+    - brew list --versions
+    - brew upgrade || true  # Important. Update is insufficient.
+    - brew --version
+
+    - rvm version
+    - rvm get stable
+    - rvm version
+
+    - cat .ruby-version
+    - rvm use "$(cat .ruby-version)" --install
+    - which -a ruby
+    - which -a gem
+    - ruby --version
+    - gem --version
+    - brew --version
+
+    - gem install homebrew_automation -v 0.0.8
+    - homebrew_automation.rb help
+
+    - stack --no-terminal setup
+    - stack --no-terminal test --only-dependencies
 
 script:
     - stack --no-terminal test
