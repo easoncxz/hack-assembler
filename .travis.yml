@@ -53,6 +53,11 @@ jobs:
 
         - stage: test
           os: osx
+          osx_image: xcode6.4
+          # macOS 10.10 yosemite
+
+        - stage: test
+          os: osx
           osx_image: xcode8
           # macOS 10.11 el_capitan
 
