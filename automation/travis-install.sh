@@ -18,8 +18,9 @@ set -x  # Be noisy
 
 # ... so that we can have a version of Ruby that works with homebrew_automation, ...
 #rvm osx-ssl-certs update all    # https://github.com/rubygems/rubygems.org/issues/613
-rvm install 'ruby-2.5.1'
-rvm use 'ruby-2.5.1'
+#rvm install 'ruby-2.5.1'
+#rvm use 'ruby-2.5.1'
+
 which -a ruby
 which -a gem
 ruby --version
