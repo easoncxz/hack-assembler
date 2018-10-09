@@ -30,7 +30,10 @@ install:
     - gem install homebrew_automation -v 0.0.8
     - homebrew_automation.rb help
 
-    - brew install --verbose haskell-stack
+    # Homebrew doesn't have pre-built binaries for Yosemite anymore,
+    # and Travis jobs are timing out while we were compiling Stack.
+    # Let just grab a binary.
+    - if ! which -a stack; then curl -sSL https://get.haskellstack.org/ | sh fi
     - stack --no-terminal setup
     - stack --no-terminal test --only-dependencies
 
