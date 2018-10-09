@@ -5,12 +5,10 @@ cache:
     directories:
         - $HOME/.stack/
         - $HOME/.rvm/
-        - $TRAVIS_BUILD_DIR/.stack-work
+        - .stack-work
+    timeout: 1000
 
-install:
-    - uname -a
-    - sw_vers
-
+install:    # The most complex step: the RVM one
     - brew --version
     - brew doctor || true
     - brew upgrade --display-times || true  # Important. Update is insufficient.
@@ -21,7 +19,7 @@ install:
     - rvm version
 
     - cat .ruby-version
-    - rvm use "$(cat .ruby-version)" --install
+    - rvm --verbose use "$(cat .ruby-version)" --install
     - which -a ruby
     - which -a gem
     - ruby --version
@@ -31,52 +29,164 @@ install:
     - gem install homebrew_automation -v 0.0.8
     - homebrew_automation.rb help
 
-    # Homebrew doesn't have pre-built binaries for Yosemite anymore,
-    # and Travis jobs are timing out while we were compiling Stack.
-    # Let just grab a binary.
-    - if ! which -a stack; then curl -sSL https://get.haskellstack.org/ | sh; fi
-    - stack --no-terminal setup
-    - stack --no-terminal test --only-dependencies
-
 script:
-    - stack --no-terminal test
-
-deploy:
-    - skip_cleanup: true
-      provider: script
-      script: echo "Pretend we're building and uploading bottles here."
-      on:
-          tags: true
+    - echo "Scripting nothing by default"
 
 jobs:
     include:
 
-        - stage: test
+        - stage: "Warm RVM cache"
           os: osx
-          osx_image: xcode6.4
-          # macOS 10.10 yosemite
+          osx_image: xcode6.4 # macOS 10.10 yosemite
+
+        - stage: "Warm RVM cache"
+          os: osx
+          osx_image: xcode8 # macOS 10.11 el_capitan
+
+        - stage: "Warm RVM cache"
+          os: osx
+          osx_image: xcode9.2 # macOS 10.12 sierra
+
+        - stage: "Warm RVM cache"
+          os: osx
+          osx_image: xcode10 # macOS 10.13 high_sierra
 
         - stage: test
           os: osx
-          osx_image: xcode8
-          # macOS 10.11 el_capitan
+          osx_image: xcode6.4 # macOS 10.10 yosemite
+
+          install:
+            # Homebrew doesn't have pre-built binaries for Yosemite anymore,
+            # and Travis jobs are timing out while we were compiling Stack.
+            # Let just grab a binary.
+            - homebrew_automation.rb help
+            - if ! which -a stack; then curl -sSL https://get.haskellstack.org/ | sh; fi
+            - stack --no-terminal setup
+            - stack --no-terminal test --only-dependencies
+          script:
+            - stack --no-terminal test
+
 
         - stage: test
           os: osx
-          osx_image: xcode9.2
-          # macOS 10.12 sierra
+          osx_image: xcode8 # macOS 10.11 el_capitan
+
+          install:
+            # Homebrew doesn't have pre-built binaries for Yosemite anymore,
+            # and Travis jobs are timing out while we were compiling Stack.
+            # Let just grab a binary.
+            - homebrew_automation.rb help
+            - if ! which -a stack; then curl -sSL https://get.haskellstack.org/ | sh; fi
+            - stack --no-terminal setup
+            - stack --no-terminal test --only-dependencies
+          script:
+            - stack --no-terminal test
+
 
         - stage: test
           os: osx
-          osx_image: xcode10
-          # macOS 10.13 high_sierra
+          osx_image: xcode9.2 # macOS 10.12 sierra
 
-        - stage: "Now deploy!"
+          install:
+            # Homebrew doesn't have pre-built binaries for Yosemite anymore,
+            # and Travis jobs are timing out while we were compiling Stack.
+            # Let just grab a binary.
+            - homebrew_automation.rb help
+            - if ! which -a stack; then curl -sSL https://get.haskellstack.org/ | sh; fi
+            - stack --no-terminal setup
+            - stack --no-terminal test --only-dependencies
+          script:
+            - stack --no-terminal test
+
+
+        - stage: test
+          os: osx
+          osx_image: xcode10 # macOS 10.13 high_sierra
+
+          install:
+            # Homebrew doesn't have pre-built binaries for Yosemite anymore,
+            # and Travis jobs are timing out while we were compiling Stack.
+            # Let just grab a binary.
+            - homebrew_automation.rb help
+            - if ! which -a stack; then curl -sSL https://get.haskellstack.org/ | sh; fi
+            - stack --no-terminal setup
+            - stack --no-terminal test --only-dependencies
+          script:
+            - stack --no-terminal test
+
+        - stage: "Bottle and upload"
+          os: osx
+          osx_image: xcode6.4 # macOS 10.10 yosemite
+
+          install: echo "Nothing to install"
+          script: echo "Nothing to script"
+          before_deploy:
+            - echo "Pretent we're building a bottle here"
+          deploy:
+            provider: script
+            script: echo "Pretent we're uploading files to Bintray here"
+            skip_cleanup: true
+            on:
+              tags: true
+
+
+        - stage: "Bottle and upload"
+          os: osx
+          osx_image: xcode8 # macOS 10.11 el_capitan
+
+          install: echo "Nothing to install"
+          script: echo "Nothing to script"
+          before_deploy:
+            - echo "Pretent we're building a bottle here"
+          deploy:
+            provider: script
+            script: echo "Pretent we're uploading files to Bintray here"
+            skip_cleanup: true
+            on:
+              tags: true
+
+
+        - stage: "Bottle and upload"
+          os: osx
+          osx_image: xcode9.2 # macOS 10.12 sierra
+
+          install: echo "Nothing to install"
+          script: echo "Nothing to script"
+          before_deploy:
+            - echo "Pretent we're building a bottle here"
+          deploy:
+            provider: script
+            script: echo "Pretent we're uploading files to Bintray here"
+            skip_cleanup: true
+            on:
+              tags: true
+
+
+        - stage: "Bottle and upload"
+          os: osx
+          osx_image: xcode10 # macOS 10.13 high_sierra
+
+          install: echo "Nothing to install"
+          script: echo "Nothing to script"
+          before_deploy:
+            - echo "Pretent we're building a bottle here"
+          deploy:
+            provider: script
+            script: echo "Pretent we're uploading files to Bintray here"
+            skip_cleanup: true
+            on:
+              tags: true
+
+
+        - stage: "Publish bottles"
           os: linux
           sudo: false
-          install: echo "Nothing to install; binaries should already be on Bintray."
-          script: echo "Nothing to test; binaries should already be on Bintray."
+          language: minimal
+          install: echo "Nothing to install"
+          script: echo "Nothing to test"
           deploy:
               provider: script
               script: echo "Pretend we're gathering and publishing bottles here."
               skip_cleanup: true
+              on:
+                tags: true
