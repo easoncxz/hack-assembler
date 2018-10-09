@@ -1,5 +1,5 @@
 name:                hack-assembler
-version:             0.1.1.2
+version:             0.1.1.17
 synopsis:            An assembler for the Hack language
 description:         A coursework project for nand2tetris
 homepage:            https://github.com/easoncxz/hack-assembler
@@ -19,7 +19,6 @@ library
                      , Parser
                      , Formatter
                      , Model
-                     , Automation.Github
                      , Automation.CabalVersion
   build-depends:       base >= 4.7 && < 5
                      , text
@@ -42,6 +41,8 @@ library
                      , uri-templater
                      , either
                      , optional-args
+                     , string-conversions
+                     , cryptohash
   default-language:    Haskell2010
 
 executable hack-assembler
@@ -53,25 +54,13 @@ executable hack-assembler
                      , text
   default-language:    Haskell2010
 
-executable deploy-sdist-github
+executable hack-assembler-automation
   hs-source-dirs:      automation
-  main-is:             DeploySdistGithub.hs
+  main-is:             DeployMain.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , hack-assembler
                      , turtle
-                     , optional-args
-                     , system-filepath
-  default-language:    Haskell2010
-
-executable maybe-tag
-  hs-source-dirs:      automation
-  main-is:             MaybeTag.hs
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  build-depends:       base
-                     , hack-assembler
-                     , turtle
-                     , foldl
                      , text
   default-language:    Haskell2010
 
@@ -84,6 +73,11 @@ test-suite hack-assembler-test
                      , QuickCheck
                      , HUnit
                      , containers
+                     , text
+                     , bytestring
+                     , heredoc
+                     , turtle
+                     , managed
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   default-language:    Haskell2010
 

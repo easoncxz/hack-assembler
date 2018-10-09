@@ -1,93 +1,106 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 import Control.Monad
-import Test.QuickCheck
-import Test.HUnit
-
-import Data.Set (Set)
-import qualified Data.Set as Set
+import qualified Data.ByteString.Lazy as BL
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
+import Data.Set (Set)
+import qualified Data.Set as Set
+import Data.Text (Text)
+import Test.HUnit
+import Test.QuickCheck
 
+import qualified Formatter as Formatter
 import Lib
 import qualified Model as Model
 import qualified Parser as Parser
-import qualified Formatter as Formatter
 
 reverseList :: [Int] -> Bool
-reverseList xs =
-  xs == reverse (reverse xs)
+reverseList xs = xs == reverse (reverse xs)
 
 testClean :: Test
-testClean = TestCase $ do
-  assertEqual "" (Parser.clean "abc   // adsfasdf") "abc"
-  assertEqual "" (Parser.clean "   abc    ") "abc"
+testClean =
+  TestCase $ do
+    assertEqual "" "abc" (Parser.clean "abc   // adsfasdf")
+    assertEqual "" "abc" (Parser.clean "   abc    ")
 
 testParseLabel :: Test
-testParseLabel = TestCase $ do
-  assertEqual "really a label"
-    (Parser.parseLabel "  (LOOP)   // start here")
-    (Just . Model.LabelInstruction $ "LOOP")
-  assertEqual "not a label at all"
-    (Parser.parseLabel " @lol  // not a label")
-    Nothing
-  assertEqual "not a label either"
-    (Parser.parseLabel "(adf  // syntax error")
-    Nothing
+testParseLabel =
+  TestCase $ do
+    assertEqual
+      "really a label"
+      (Just . Model.LabelInstruction $ "LOOP")
+      (Parser.parseLabel "  (LOOP)   // start here")
+    assertEqual
+      "not a label at all"
+      Nothing
+      (Parser.parseLabel " @lol  // not a label")
+    assertEqual
+      "not a label either"
+      Nothing
+      (Parser.parseLabel "(adf  // syntax error")
 
 testParseAddress :: Test
-testParseAddress = TestCase $ do
-  assertEqual "a literal address"
-    (Parser.parseAddr "@1234  // lol")
-    (Just . Model.AddrInstruction . Model.AddrLiteral $ 1234)
-  assertEqual "a symbolic address"
-    (Parser.parseAddr "  @sum")
-    (Just . Model.AddrInstruction . Model.AddrSymbol $ "sum")
-  forM_
-    [ Parser.parseAddr "   D=A"
-    , Parser.parseAddr " // nothing here"
-    , Parser.parseAddr "(LOOP)"
-    ] $ \c ->
-      assertEqual "not an address" c Nothing
+testParseAddress =
+  TestCase $ do
+    assertEqual
+      "a literal address"
+      (Just . Model.AddrInstruction . Model.AddrLiteral $ 1234)
+      (Parser.parseAddr "@1234  // lol")
+    assertEqual
+      "a symbolic address"
+      (Just . Model.AddrInstruction . Model.AddrSymbol $ "sum")
+      (Parser.parseAddr "  @sum")
+    forM_
+      [ Parser.parseAddr "   D=A"
+      , Parser.parseAddr " // nothing here"
+      , Parser.parseAddr "(LOOP)"
+      ] $ \c -> assertEqual "not an address" Nothing c
 
 testFormatting :: Test
-testFormatting = TestCase $ do
-  assertEqual "C-instruction expression"
-    (Formatter.formatCompExpr Model.DPlusOne)
-    "011111"
-  assertEqual "C-instruction destination"
-    (Formatter.formatDest $ Set.fromList [Model.RegA, Model.RegM])
-    "101"
-  assertEqual "C-instruction destination (2)"
-    (Formatter.formatDest $ Set.singleton Model.RegA)
-    "100"
-  assertEqual "C-instruction jump"
-    (Formatter.formatJump $ Set.fromList [EQ, GT])
-    "011"
-  assertEqual "C-instruction jump (2)"
-    (Formatter.formatJump $ Set.fromList [GT])
-    "001"
-  assertEqual "A-instruction"
-    (Formatter.formatAddr
-      Map.empty
-      (Model.AddrLiteral 5))
-    (Just "0000000000000101")
-  assertEqual "Whole C-instruction"
-    (Formatter.formatComp
-       (Set.fromList [Model.RegA, Model.RegD])
-       Model.RSubOne
-       Model.UseM
-       (Set.fromList [GT,EQ]))
-    "1111110010110011"
-
+testFormatting =
+  TestCase $ do
+    assertEqual
+      "C-instruction expression"
+      "011111"
+      (Formatter.formatCompExpr Model.DPlusOne)
+    assertEqual
+      "C-instruction destination"
+      "101"
+      (Formatter.formatDest $ Set.fromList [Model.RegA, Model.RegM])
+    assertEqual
+      "C-instruction destination (2)"
+      "100"
+      (Formatter.formatDest $ Set.singleton Model.RegA)
+    assertEqual
+      "C-instruction jump"
+      "011"
+      (Formatter.formatJump $ Set.fromList [EQ, GT])
+    assertEqual
+      "C-instruction jump (2)"
+      "001"
+      (Formatter.formatJump $ Set.fromList [GT])
+    assertEqual
+      "A-instruction"
+      (Just "0000000000000101")
+      (Formatter.formatAddr Map.empty (Model.AddrLiteral 5))
+    assertEqual
+      "Whole C-instruction"
+      "1111110010110011"
+      (Formatter.formatComp
+         (Set.fromList [Model.RegA, Model.RegD])
+         Model.RSubOne
+         Model.UseM
+         (Set.fromList [GT, EQ]))
 
 main :: IO ()
 main = do
   quickCheck reverseList
-  runTestTT $ TestList
-    [ TestLabel "clean" testClean
-    , TestLabel "parse label" testParseLabel
-    , TestLabel "parse address" testParseAddress
-    , TestLabel "format instructions" testFormatting
-    ]
+  runTestTT $
+    TestList
+      [ TestLabel "clean" testClean
+      , TestLabel "parse label" testParseLabel
+      , TestLabel "parse address" testParseAddress
+      , TestLabel "format instructions" testFormatting
+      ]
   return ()

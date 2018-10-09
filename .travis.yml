@@ -1,30 +1,82 @@
 
-os: osx
-osx_image: xcode6.4
-
 language: generic
 
 cache:
     directories:
         - $HOME/.stack/
-
-before_install:
-    - brew update --verbose
-    - brew list --verbose haskell-stack || brew install --verbose haskell-stack
+        - $HOME/.rvm/
+        - $TRAVIS_BUILD_DIR/.stack-work
 
 install:
-    # A "failure" in our dependencies should be an "error" for us.
+    - uname -a
+    - sw_vers
+
+    - brew --version
+    - brew doctor || true
+    - brew upgrade --display-times || true  # Important. Update is insufficient.
+    - brew --version
+
+    - rvm version
+    - rvm get stable
+    - rvm version
+
+    - cat .ruby-version
+    - rvm use "$(cat .ruby-version)" --install
+    - which -a ruby
+    - which -a gem
+    - ruby --version
+    - gem --version
+    - brew --version
+
+    - gem install homebrew_automation -v 0.0.8
+    - homebrew_automation.rb help
+
+    # Homebrew doesn't have pre-built binaries for Yosemite anymore,
+    # and Travis jobs are timing out while we were compiling Stack.
+    # Let just grab a binary.
+    - if ! which -a stack; then curl -sSL https://get.haskellstack.org/ | sh; fi
     - stack --no-terminal setup
     - stack --no-terminal test --only-dependencies
 
 script:
-    # We count out own failures as such.
     - stack --no-terminal test
 
 deploy:
     - skip_cleanup: true
       provider: script
-      script: stack exec deploy-sdist-github -- hack-assembler.cabal
+      script: echo "Pretend we're building and uploading bottles here."
       on:
           tags: true
 
+jobs:
+    include:
+
+        - stage: test
+          os: osx
+          osx_image: xcode6.4
+          # macOS 10.10 yosemite
+
+        - stage: test
+          os: osx
+          osx_image: xcode8
+          # macOS 10.11 el_capitan
+
+        - stage: test
+          os: osx
+          osx_image: xcode9.2
+          # macOS 10.12 sierra
+
+        - stage: test
+          os: osx
+          osx_image: xcode10
+          # macOS 10.13 high_sierra
+
+        - stage: "Now deploy!"
+          os: linux
+          sudo: false
+          install: echo "Nothing to install; binaries should already be on Bintray."
+          script: echo "Nothing to test; binaries should already be on Bintray."
+          deploy:
+              provider: script
+              script: echo "Pretend we're gathering and publishing bottles here."
+              skip_cleanup: true
