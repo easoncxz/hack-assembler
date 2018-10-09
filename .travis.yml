@@ -11,13 +11,8 @@ install:
     - sw_vers
 
     - brew --version
-    - brew update || true
     - brew doctor || true
-    - brew list --versions
-    - brew bundle
-    - brew bundle cleanup --force || true
-    - brew list --versions
-    - brew upgrade || true  # Important. Update is insufficient.
+    - brew upgrade --display-times || true  # Important. Update is insufficient.
     - brew --version
 
     - rvm version
@@ -35,6 +30,7 @@ install:
     - gem install homebrew_automation -v 0.0.8
     - homebrew_automation.rb help
 
+    - brew install --verbose haskell-stack
     - stack --no-terminal setup
     - stack --no-terminal test --only-dependencies
 
