@@ -16,21 +16,18 @@ script:
 jobs:
     include:
 
-        - stage: test
-          os: osx
-          osx_image: xcode6.4 # macOS 10.10 yosemite
-
-        - stage: test
-          os: osx
-          osx_image: xcode8 # macOS 10.11 el_capitan
-
-        - stage: test
-          os: osx
-          osx_image: xcode9.2 # macOS 10.12 sierra
-
-        - stage: test
-          os: osx
-          osx_image: xcode10 # macOS 10.13 high_sierra
+        #- stage: test
+        #  os: osx
+        #  osx_image: xcode6.4 # macOS 10.10 yosemite
+        #- stage: test
+        #  os: osx
+        #  osx_image: xcode8 # macOS 10.11 el_capitan
+        #- stage: test
+        #  os: osx
+        #  osx_image: xcode9.2 # macOS 10.12 sierra
+        #- stage: test
+        #  os: osx
+        #  osx_image: xcode10 # macOS 10.13 high_sierra
 
         - stage: "Bottle and upload"
           os: osx

@@ -10,10 +10,10 @@ brew upgrade || true
 brew --version
 
 # ... so that we can install GnuPG, ...
-brew install gnupg || brew upgrade gnupg || which -a gpg
-echo 'Expecting to have GnuPG v2.x'
-gpg --version
-gpg --keyserver hkp://pgp.mit.edu --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+#brew install gnupg || brew upgrade gnupg || which -a gpg
+#echo 'Expecting to have GnuPG v2.x'
+#gpg --version
+#gpg --keyserver hkp://pgp.mit.edu --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
 
 set +x  # RVM is too noisy...
 function with_echo {
