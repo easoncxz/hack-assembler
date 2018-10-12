@@ -39,6 +39,7 @@ jobs:
           install:
               - ./automation/install-stack.sh
               - ./automation/install-homebrew-automation.sh
+              - rvm reload
               - rvm use "$(cat .ruby-version)"
           script:
               - homebrew_automation.rb help
@@ -60,6 +61,7 @@ jobs:
           install:
               - ./automation/install-stack.sh
               - ./automation/install-homebrew-automation.sh
+              - rvm reload
               - rvm use "$(cat .ruby-version)"
           script:
               - homebrew_automation.rb help
@@ -81,6 +83,7 @@ jobs:
           install:
               - ./automation/install-stack.sh
               - ./automation/install-homebrew-automation.sh
+              - rvm reload
               - rvm use "$(cat .ruby-version)"
           script:
               - homebrew_automation.rb help
@@ -102,6 +105,7 @@ jobs:
           install:
               - ./automation/install-stack.sh
               - ./automation/install-homebrew-automation.sh
+              - rvm reload
               - rvm use "$(cat .ruby-version)"
           script:
               - homebrew_automation.rb help
