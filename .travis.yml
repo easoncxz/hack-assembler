@@ -4,30 +4,11 @@ language: generic
 cache:
     directories:
         - $HOME/.stack/
-        - $HOME/.rvm/
         - .stack-work
     timeout: 1000
 
 install:    # The most complex step: the RVM one
-    - brew --version
-    - brew doctor || true
-    - brew upgrade --display-times || true  # Important. Update is insufficient.
-    - brew --version
-
-    - rvm version
-    - rvm get stable
-    - rvm version
-
-    - cat .ruby-version
-    - rvm --verbose use "$(cat .ruby-version)" --install
-    - which -a ruby
-    - which -a gem
-    - ruby --version
-    - gem --version
-    - brew --version
-
-    - gem install homebrew_automation -v 0.0.8
-    - homebrew_automation.rb help
+    - ./automation/install-stack.sh
 
 script:
     - echo "Scripting nothing by default"
