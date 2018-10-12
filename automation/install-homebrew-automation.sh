@@ -6,7 +6,8 @@ set -x  # Be noisy
 # Bring Homebrew up to date, ...
 brew --version
 brew doctor || true
-brew upgrade || true
+brew list --versions -1 | sort || true
+time brew upgrade || true
 brew --version
 
 # ... so that we can install GnuPG, ...
@@ -23,6 +24,7 @@ function with_echo {
 }
 
 # ... so that we can verify the new RVM binary when we download it, ...
+with_echo rvm reload
 with_echo rvm version
 with_echo rvm get latest
 with_echo rvm version
