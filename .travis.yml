@@ -8,12 +8,6 @@ cache:
         - $HOME/.rvm/
     timeout: 1000
 
-#install:
-#    - ./automation/install-stack.sh
-#
-#script:
-#    - stack --no-terminal test
-
 jobs:
     include:
 
@@ -32,57 +26,11 @@ jobs:
 
         - stage: "Bottle and upload"
           os: osx
-          osx_image: xcode6.4 # macOS 10.10 yosemite
-
-          install:
-              - ./automation/install-stack.sh
-              - source automation/install-homebrew-automation.sh
-              - rvm reload
-              - rvm use "$(cat .ruby-version)" --install
-          script:
-              - homebrew_automation.rb help
-              - stack --no-terminal test
-          before_deploy:
-              - echo "Pretent we're building a bottle here"
-          deploy:
-              provider: script
-              script: echo "Pretent we're uploading files to Bintray here"
-              skip_cleanup: true
-              on:
-                  tags: true
-
-
-        - stage: "Bottle and upload"
-          os: osx
-          osx_image: xcode8 # macOS 10.11 el_capitan
-
-          install:
-              - ./automation/install-stack.sh
-              - source automation/install-homebrew-automation.sh
-              - rvm reload
-              - rvm use "$(cat .ruby-version)" --install
-          script:
-              - homebrew_automation.rb help
-              - stack --no-terminal test
-          before_deploy:
-              - echo "Pretent we're building a bottle here"
-          deploy:
-              provider: script
-              script: echo "Pretent we're uploading files to Bintray here"
-              skip_cleanup: true
-              on:
-                  tags: true
-
-
-        - stage: "Bottle and upload"
-          os: osx
           osx_image: xcode9.2 # macOS 10.12 sierra
 
           install:
               - ./automation/install-stack.sh
-              - source automation/install-homebrew-automation.sh
-              - rvm reload
-              - rvm use "$(cat .ruby-version)" --install
+              - ./automation/install-homebrew-automation.sh
           script:
               - homebrew_automation.rb help
               - stack --no-terminal test
@@ -102,9 +50,7 @@ jobs:
 
           install:
               - ./automation/install-stack.sh
-              - source automation/install-homebrew-automation.sh
-              - rvm reload
-              - rvm use "$(cat .ruby-version)" --install
+              - ./automation/install-homebrew-automation.sh
           script:
               - homebrew_automation.rb help
               - stack --no-terminal test

@@ -33,13 +33,13 @@ set -x  # Be noisy
 ## ... so that we can have a version of Ruby that works with homebrew_automation, ...
 #with_echo cat .ruby-version
 #with_echo rvm use "$(cat .ruby-version)" --install
-with_echo which -a ruby
-with_echo which -a gem
-with_echo ruby --version
-with_echo gem --version
+#with_echo which -a ruby
+#with_echo which -a gem
+#with_echo ruby --version
+#with_echo gem --version
 
 #set -x
 
 # ... so that we can install homebrew_automation.
 gem install homebrew_automation -v 0.0.8
-homebrew_automation.rb help
+homebrew_automation.rb --help
