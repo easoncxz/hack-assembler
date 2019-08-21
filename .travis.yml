@@ -21,11 +21,9 @@ jobs:
           script:
               - homebrew_automation.rb help
               - stack --no-terminal test
-          before_deploy:
-              - echo "Pretent we're building a bottle here"
           deploy:
               provider: script
-              script: echo "Pretent we're uploading files to Bintray here"
+              script: ./automation/bottle-and-upload.sh
               skip_cleanup: true
               on:
                   tags: true
@@ -41,11 +39,9 @@ jobs:
           script:
               - homebrew_automation.rb help
               - stack --no-terminal test
-          before_deploy:
-              - echo "Pretent we're building a bottle here"
           deploy:
               provider: script
-              script: echo "Pretent we're uploading files to Bintray here"
+              script: ./automation/bottle-and-upload.sh
               skip_cleanup: true
               on:
                   tags: true
@@ -59,7 +55,7 @@ jobs:
           script: echo "Nothing to test"
           deploy:
               provider: script
-              script: echo "Pretend we're gathering and publishing bottles here."
+              script: ./automation/gather-and-publish.sh
               skip_cleanup: true
               on:
                 tags: true
