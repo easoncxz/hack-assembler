@@ -3,6 +3,11 @@
 set -e
 set -x
 
+# Why is this even needed again?
+pwd
+ls -l
+./automation/install-homebrew-automation.sh
+
 homebrew_automation.rb bottle gather-and-publish \
     --source-user easoncxz \
     --source-repo hack-assembler \
