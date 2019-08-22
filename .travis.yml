@@ -55,7 +55,7 @@ jobs:
           script: echo "Nothing to test"
           deploy:
               provider: script
-              script: pwd && echo "$TRAVIS_BUILD_DIR" && ./automation/gather-and-publish.sh
+              script: "pwd && echo \"$TRAVIS_BUILD_DIR\" && ls -l automation && bash ./automation/gather-and-publish.sh"
               skip_cleanup: true
               on:
                 tags: true
