@@ -1,2 +1,0 @@
-
-echo "Nah not ready"
