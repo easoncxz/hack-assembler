@@ -8,5 +8,5 @@ which -a ruby
 ruby --version
 
 # Install our script
-gem install homebrew_automation -v 0.1.4
+gem install homebrew_automation -v 0.1.5
 homebrew_automation.rb --help
