@@ -11,7 +11,7 @@ ls -l
 homebrew_automation.rb bottle build-and-upload \
     --source-user easoncxz \
     --source-repo hack-assembler \
-    --source-tag "$(stack exec -- hack-assembler-automation version-as-tag)" \
+    --source-tag v"$(./automation/version-as-num.sh)" \
     \
     --tap-user easoncxz \
     --tap-repo homebrew-tap \
