@@ -14,12 +14,14 @@ import Distribution.PackageDescription (package, packageDescription)
 import Distribution.PackageDescription.Parse (readPackageDescription)
 
 -- | Read version from a Cabal file
-readVersion :: FilePath -> IO Version
-readVersion cabalFilePath =
+readVersion :: IO Version
+readVersion =
   readPackageDescription normal cabalFilePath
     & fmap packageDescription
     & fmap package
     & fmap pkgVersion
+  where
+    cabalFilePath = "hack-assembler.cabal"
 
 -- | Suitable for using with Git
 asTag :: Version -> String
