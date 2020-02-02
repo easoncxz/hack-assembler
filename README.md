@@ -17,8 +17,3 @@ Build and run:
 Run tests:
 
     $ stack test
-
-Configuring TravisCI (useful for only me):
-
-    $ export EASONCXZ_GITHUB_OAUTH_TOKEN='very-secret'
-    $ export EASONCXZ_BINTRAY_API_KEY='quite-secret'
