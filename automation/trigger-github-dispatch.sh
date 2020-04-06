@@ -16,7 +16,9 @@ then
     echo "Usage: $0 event_type [client_payload]"
     exit 1
 else
+    # You might want `trigger_ci_run`; see .github/workflows/main.yml for details
     event_type="$1"
+
     if [ $# -lt 2 ]
     then
         curl -X POST "https://api.github.com/repos/$owner/$repo/dispatches" \
@@ -30,4 +32,5 @@ else
             -H "Authorization: token $EASONCXZ_GITHUB_OAUTH_TOKEN" \
             --data "{\"event_type\": \"$event_type\", \"client_payload\": $client_payload }"
     fi
+
 fi

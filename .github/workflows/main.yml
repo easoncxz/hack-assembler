@@ -31,3 +31,14 @@ jobs:
     # Runs a set of commands using the runners shell
     - name: Look around
       run: ./automation/look-around.sh
+  deploy:
+    needs: build
+    steps:
+      - name: Say something
+        run: |
+          echo "Nah, not actually deploying."
+  report:
+    needs: deploy
+    steps:
+      - name: Transitively depends on build
+        run: echo "report is run too."
