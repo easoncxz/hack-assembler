@@ -27,6 +27,6 @@ jobs:
       run: whoami
 
     # Runs a set of commands using the runners shell
-    - name: look around
+    - name: Look around
       if: github.event.action == 'trigger_ci_run'
       run: ./automation/look-around.sh
