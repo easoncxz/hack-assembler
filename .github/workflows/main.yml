@@ -9,6 +9,7 @@ on:
     branches:
       - master
   repository_dispatch:
+    event_type: 'trigger_ci_run'
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -28,5 +29,4 @@ jobs:
 
     # Runs a set of commands using the runners shell
     - name: Look around
-      if: github.event.action == 'trigger_ci_run'
       run: ./automation/look-around.sh
