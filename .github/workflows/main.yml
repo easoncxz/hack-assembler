@@ -32,6 +32,13 @@ jobs:
     - name: Look around
       run: ./automation/look-around.sh
 
+    - name: Look at github context variable
+      run: |
+        echo 'event: ${{ github.event }}'
+        echo 'event_path: ${{ github.event_path }}'
+        echo 'event_name: ${{ github.event_name }}'
+        echo 'ref: ${{ github.ref }}'
+
     - name: Define cache
       id: cache-253
       uses: 'actions/cache@v1'
