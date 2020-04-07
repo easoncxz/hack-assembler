@@ -34,7 +34,8 @@ jobs:
 
     - name: Look at github context variable
       run: |
-        echo 'event: ${{ github.event }}'
+        echo 'event.ref: ${{ github.event.ref }}'
+        echo 'event.head: ${{ github.event.head }}'
         echo 'event_path: ${{ github.event_path }}'
         echo 'event_name: ${{ github.event_name }}'
         echo 'ref: ${{ github.ref }}'
