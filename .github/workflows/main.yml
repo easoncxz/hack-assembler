@@ -32,8 +32,21 @@ jobs:
     - name: Look around
       run: ./automation/look-around.sh
 
-    - name: Make a mess
-      run: touch some-stuff
+    - name: Define cache
+      id: cache-253
+      uses: 'actions/cache@v1'
+      with:
+        path: cachy-cache
+        key: "${{ runner.os }}-hardcoded-first-cache-key"
+
+    - name: Write to cache
+      if: steps.cache-253.output.cache-hit != true
+      run: |
+        echo "Let's try to load the cache."
+        if [ ! -d cachy-cache ]; then
+          mkdir cachy-cache
+        fi
+        echo valuable-values > cachy-cache/some-stuff
   deploy:
     runs-on: macos
     needs: build
