@@ -39,6 +39,7 @@ jobs:
         echo 'event_path: ${{ github.event_path }}'
         echo 'event_name: ${{ github.event_name }}'
         echo 'ref: ${{ github.ref }}'
+        cat "${{ github.event_path }}"
 
     - name: Define cache
       id: cache-253
