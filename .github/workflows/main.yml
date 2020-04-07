@@ -11,6 +11,7 @@ on:
   repository_dispatch:
     # https://github.com/peter-evans/repository-dispatch
     types: ['trigger_ci_run']
+  create:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -40,6 +41,13 @@ jobs:
         echo 'event_name: ${{ github.event_name }}'
         echo 'ref: ${{ github.ref }}'
         cat "${{ github.event_path }}"
+
+    - name: 'Look at the `create` event'
+      if: github.event_name == 'create'
+      run: |
+        echo 'ref_type: ${{ github.event.ref_type }}'
+        echo 'ref: ${{ github.event.ref }}'
+
 
     - name: Define cache
       id: cache-253
