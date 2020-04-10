@@ -56,14 +56,11 @@ jobs:
         echo 'ref: ${{ github.ref }}'
         cat "${{ github.event_path }}"
 
-    - name: Install Stack
-      run: ./automation/install-stack.sh
-
     - name: Install homebrew_automation
       run: ./automation/install-homebrew-automation.sh
 
-    - name: Install Haskell dependencies
-      run: stack --no-terminal --only-dependencies test
+    - name: Install Stack and Haskell dependencies
+      run: ./automation/install-stack.sh
 
     - name: Compile and test
       run: stack --no-terminal test
