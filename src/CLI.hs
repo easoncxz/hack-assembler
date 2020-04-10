@@ -8,11 +8,13 @@ module CLI
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
+import Data.Version (showVersion)
 import Control.Applicative
 import Control.Monad
 
-import qualified Automation.CabalVersion as CabalVersion
 import Lib (assemble)
+
+import Paths_hack_assembler (version)
 
 data CliVersionType
   = VersionAsGitTag
@@ -24,12 +26,11 @@ data CliMode
 
 main :: CliMode -> IO ()
 main (CliShowVersion vtype) = do
-  let format =
+  let format v =
         case vtype of
-          VersionAsGitTag -> CabalVersion.asTag
-          VersionAsCabalString -> CabalVersion.asString
-  v <- CabalVersion.readVersion
-  putStrLn (format v)
+          VersionAsGitTag -> "v" ++ showVersion v
+          VersionAsCabalString -> showVersion v
+  putStrLn (format version)
 main CliRunAssembler = do
   src <- map T.pack . lines <$> getContents
   case assemble src of

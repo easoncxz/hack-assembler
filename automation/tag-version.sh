@@ -3,5 +3,5 @@
 set -e
 
 stack build
-git tag "$(stack exec -- hack-assembler-automation version-as-tag)"
+git tag v"$(./automation/version-as-num.sh)"  # notice the `v`
 git show -q --decorate --color | cat

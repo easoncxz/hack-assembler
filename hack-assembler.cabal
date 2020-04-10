@@ -1,5 +1,5 @@
 name:                hack-assembler
-version:             0.1.1.31
+version:             0.1.1.32
 synopsis:            An assembler for the Hack language
 description:         A coursework project for nand2tetris
 homepage:            https://github.com/easoncxz/hack-assembler
@@ -20,7 +20,7 @@ library
                      , Parser
                      , Formatter
                      , Model
-                     , Automation.CabalVersion
+  other-modules:       Paths_hack_assembler
   build-depends:       base >= 4.7 && < 5
                      , text
                      , containers
