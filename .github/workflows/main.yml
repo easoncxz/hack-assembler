@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Build and perhaps publish
+name: CI
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -47,33 +47,3 @@ jobs:
         echo 'ref: ${{ github.event.ref }}'
 
 
-    - name: Define cache
-      id: cache-253
-      uses: 'actions/cache@v1'
-      with:
-        path: cachy-cache
-        key: "${{ runner.os }}-hardcoded-first-cache-key"
-
-    - name: Write to cache
-      if: steps.cache-253.output.cache-hit != true
-      run: |
-        echo "Let's try to load the cache."
-        if [ ! -d cachy-cache ]; then
-          mkdir cachy-cache
-        fi
-        echo valuable-values > cachy-cache/some-stuff
-  deploy:
-    runs-on: macos
-    needs: build
-    steps:
-      - name: Say something
-        run: |
-          echo "Nah, not actually deploying."
-      - name: Look at stuff
-        run: ls some-stuff || echo no stuff here
-  report:
-    runs-on: ubuntu-18.04
-    needs: deploy
-    steps:
-      - name: Transitively depends on build
-        run: echo "report is run too."
