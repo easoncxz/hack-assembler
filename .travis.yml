@@ -1,7 +1,7 @@
 
 language: ruby
 rvm:
-    - 2.6.3
+    - 2.6.5
 
 cache:
     directories:
@@ -16,7 +16,6 @@ jobs:
         - stage: "Bottle and upload"
           os: osx
           osx_image: xcode9.2 # macOS 10.12 sierra
-
           install:
               - ./automation/install-stack.sh
               - ./automation/install-homebrew-automation.sh
@@ -34,7 +33,22 @@ jobs:
         - stage: "Bottle and upload"
           os: osx
           osx_image: xcode10 # macOS 10.13 high_sierra
+          install:
+              - ./automation/install-stack.sh
+              - ./automation/install-homebrew-automation.sh
+          script:
+              - homebrew_automation.rb help
+              - stack --no-terminal test
+          deploy:
+              provider: script
+              script: bash ./automation/bottle-and-upload.sh
+              skip_cleanup: true
+              on:
+                  tags: true
 
+        - stage: "Bottle and upload"
+          os: osx
+          osx_image: xcode11.3 # macOS 10.14 Mojave
           install:
               - ./automation/install-stack.sh
               - ./automation/install-homebrew-automation.sh
@@ -49,16 +63,18 @@ jobs:
                   tags: true
 
 
-        - stage: "Publish bottles"
+
+        - stage: "Hand over to Github Actions"
           os: linux
           sudo: false
           language: minimal
           install:
-              - ./automation/install-homebrew-automation.sh
-          script: echo "Nothing to test"
+              - echo "We don't have new macOS 10.15 machines here at Travis, so we'll need Github for that."
+          script:
+              - echo "Nothing to test"
           deploy:
               provider: script
-              script: bash ./automation/gather-and-publish.sh
+              script: ./automation/trigger-github-dispatch.sh trigger_ci_run
               skip_cleanup: true
               on:
                 tags: true
