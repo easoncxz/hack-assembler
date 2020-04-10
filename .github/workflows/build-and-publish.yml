@@ -27,21 +27,6 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: 'Cache ~/.stack'
-      id: cache-hs-stack
-      uses: 'actions/cache@v1'
-      with:
-        path: ~/.stack
-        key: "${{ runner.os }}-stack"
-
-    - name: 'Cache .stack-work'
-      id: cache-hs-stack-work
-      uses: 'actions/cache@v1'
-      with:
-        path: .stack-work
-        key: "${{ runner.os }}-stack-work"
-
-
     # Runs a set of commands using the runners shell
     - name: Look around
       run: ./automation/look-around.sh
@@ -58,12 +43,6 @@ jobs:
 
     - name: Install homebrew_automation
       run: ./automation/install-homebrew-automation.sh
-
-    - name: Install Stack and Haskell dependencies
-      run: ./automation/install-stack.sh
-
-    - name: Compile and test
-      run: stack --no-terminal test
 
     - name: Build bottle
       run: ./automation/bottle-and-upload.sh

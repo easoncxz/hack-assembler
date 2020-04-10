@@ -23,14 +23,6 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    # Runs a single command using the runners shell
-    - name: Say hi
-      run: whoami
-
-    # Runs a set of commands using the runners shell
-    - name: Look around
-      run: ./automation/look-around.sh
-
     - name: Look at github context variable
       run: |
         echo 'event.ref: ${{ github.event.ref }}'
@@ -45,5 +37,25 @@ jobs:
       run: |
         echo 'ref_type: ${{ github.event.ref_type }}'
         echo 'ref: ${{ github.event.ref }}'
+
+    - name: 'Cache ~/.stack'
+      id: cache-hs-stack
+      uses: 'actions/cache@v1'
+      with:
+        path: ~/.stack
+        key: "${{ runner.os }}-stack"
+
+    - name: 'Cache .stack-work'
+      id: cache-hs-stack-work
+      uses: 'actions/cache@v1'
+      with:
+        path: .stack-work
+        key: "${{ runner.os }}-stack-work"
+
+    - name: Install Stack and Haskell dependencies
+      run: ./automation/install-stack.sh
+
+    - name: Compile and test
+      run: stack --no-terminal test
 
 
