@@ -52,10 +52,9 @@ jobs:
         path: .stack-work
         key: "${{ runner.os }}-stack-work"
 
-    - name: Install Stack and Haskell dependencies
-      run: ./automation/install-stack.sh
-
-    - name: Compile and test
-      run: stack --no-terminal test
+    - name: Install Stack and Haskell dependencies, compile, and test
+      run: |
+        ./automation/install-stack.sh
+        stack --no-terminal test
 
 
