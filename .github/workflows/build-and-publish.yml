@@ -1,0 +1,81 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Build and publish
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  repository_dispatch:
+    # https://github.com/peter-evans/repository-dispatch
+    types: ['trigger_ci_run']
+
+env:
+  EASONCXZ_GITHUB_OAUTH_TOKEN_v2: "${{ secrets.EASONCXZ_GITHUB_OAUTH_TOKEN_v2 }}"
+  EASONCXZ_BINTRAY_API_KEY: "${{ secrets.EASONCXZ_BINTRAY_API_KEY }}"
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+
+  build:    # An arbitrary name for a job
+    # The type of runner that the job will run on
+    runs-on: macos-10.15
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: 'Cache ~/.stack'
+      id: cache-hs-stack
+      uses: 'actions/cache@v1'
+      with:
+        path: ~/.stack
+        key: "${{ runner.os }}-stack"
+
+    - name: 'Cache .stack-work'
+      id: cache-hs-stack-work
+      uses: 'actions/cache@v1'
+      with:
+        path: .stack-work
+        key: "${{ runner.os }}-stack-work"
+
+
+    # Runs a set of commands using the runners shell
+    - name: Look around
+      run: ./automation/look-around.sh
+
+    - name: Look at github context variable
+      run: |
+        echo 'event.ref: ${{ github.event.ref }}'
+        echo 'event.head: ${{ github.event.head }}'
+        echo 'event_type: ${{ github.event_type }}'
+        echo 'event_path: ${{ github.event_path }}'
+        echo 'event_name: ${{ github.event_name }}'
+        echo 'ref: ${{ github.ref }}'
+        cat "${{ github.event_path }}"
+
+    - name: Install Stack
+      run: ./automation/install-stack.sh
+
+    - name: Install homebrew_automation
+      run: ./automation/install-homebrew-automation.sh
+
+    - name: Install Haskell dependencies
+      run: stack --no-terminal --only-dependencies test
+
+    - name: Compile and test
+      run: stack --no-terminal test
+
+    - name: Build bottle
+      run: ./automation/bottle-and-upload.sh
+
+  publish:
+    runs-on: macos-10.15
+    needs: build
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Gather Bottles from Bintray and publish to Homebrew Tap
+        run: ./automation/gather-and-publish.sh

@@ -8,10 +8,8 @@ on:
   push:
     branches:
       - master
-  repository_dispatch:
-    # https://github.com/peter-evans/repository-dispatch
-    types: ['trigger_ci_run']
   create:
+    # Branch or tag created
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
