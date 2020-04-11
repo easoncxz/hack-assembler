@@ -58,5 +58,5 @@ jobs:
         stack --no-terminal test
 
     - name: Bottle and upload
-      if: event.name == 'create' && event.ref_type == 'tag'
+      if: github.event.name == 'create' && github.event.ref_type == 'tag'
       run: ./automation/bottle-and-upload.sh
