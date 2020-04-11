@@ -13,22 +13,7 @@ cache:
 jobs:
     include:
 
-        - stage: "Bottle and upload"
-          os: osx
-          osx_image: xcode9.2 # macOS 10.12 sierra
-          install:
-              - ./automation/install-stack.sh
-              - ./automation/install-homebrew-automation.sh
-          script:
-              - homebrew_automation.rb help
-              - stack --no-terminal test
-          deploy:
-              provider: script
-              script: bash ./automation/bottle-and-upload.sh
-              skip_cleanup: true
-              on:
-                  tags: true
-
+        #osx_image: xcode9.2 # macOS 10.12 sierra
 
         - stage: "Bottle and upload"
           os: osx
@@ -38,11 +23,11 @@ jobs:
               - ./automation/install-homebrew-automation.sh
           script:
               - homebrew_automation.rb help
+              - homebrew_automation.rb version
               - stack --no-terminal test
           deploy:
               provider: script
-              script: bash ./automation/bottle-and-upload.sh
-              skip_cleanup: true
+              script: ./automation/bottle-and-upload.sh
               on:
                   tags: true
 
@@ -54,11 +39,11 @@ jobs:
               - ./automation/install-homebrew-automation.sh
           script:
               - homebrew_automation.rb help
+              - homebrew_automation.rb version
               - stack --no-terminal test
           deploy:
               provider: script
-              script: bash ./automation/bottle-and-upload.sh
-              skip_cleanup: true
+              script: ./automation/bottle-and-upload.sh
               on:
                   tags: true
 
@@ -75,6 +60,5 @@ jobs:
           deploy:
               provider: script
               script: ./automation/trigger-github-dispatch.sh trigger_ci_run
-              skip_cleanup: true
               on:
                 tags: true
