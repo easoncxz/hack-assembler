@@ -11,6 +11,11 @@ on:
   create:
     # Branch or tag created
 
+env:
+  EASONCXZ_GITHUB_OAUTH_TOKEN_v2: "${{ secrets.EASONCXZ_GITHUB_OAUTH_TOKEN_v2 }}"
+  EASONCXZ_BINTRAY_API_KEY: "${{ secrets.EASONCXZ_BINTRAY_API_KEY }}"
+
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
