@@ -23,21 +23,13 @@ jobs:
           script:
               - stack --no-terminal test
 
-        - stage: "Build and test"
-          os: osx
+        - os: osx
           osx_image: xcode11.3 # macOS 10.14 Mojave
           install:
               - ./automation/install-stack.sh
-              - ./automation/install-homebrew-automation.sh
           script:
-              - homebrew_automation.rb help
-              - homebrew_automation.rb version
               - stack --no-terminal test
-          deploy:
-              provider: script
-              script: ./automation/bottle-and-upload.sh
-              on:
-                  tags: true
+
 
         - stage: "Bottle and upload"
           os: osx
@@ -53,8 +45,7 @@ jobs:
               on:
                   tags: true
 
-        - stage: "Bottle and upload"
-          os: osx
+        - os: osx
           osx_image: xcode11.3 # macOS 10.14 Mojave
           install:
               - ./automation/install-homebrew-automation.sh
@@ -66,7 +57,6 @@ jobs:
               script: ./automation/bottle-and-upload.sh
               on:
                   tags: true
-
 
 
         - stage: "Hand over to Github Actions"
