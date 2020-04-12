@@ -4,9 +4,7 @@ hack-assembler
 [![Build Status](https://travis-ci.org/easoncxz/hack-assembler.svg?branch=master)](https://travis-ci.org/easoncxz/hack-assembler)
 ![Build and test](https://github.com/easoncxz/hack-assembler/workflows/Build%20and%20test/badge.svg)
 
-<p align="center">
-  ![nand2tetris](resources/nand2tetris-banner.png "NAND to Tetris")
-</p>
+![nand2tetris](resources/nand2tetris-banner.png "NAND to Tetris")
 
 # An assembler for an educational assembly language
 
@@ -165,3 +163,4 @@ CLI tool in this repo via `gem install homebrew_automation`.
 [tap]: https://github.com/easoncxz/homebrew-tap
 [formula]: https://github.com/easoncxz/homebrew-tap/blob/master/Formula/hack-assembler.rb
 [beer]: https://docs.brew.sh/
+[gem]: https://github.com/easoncxz/homebrew-automation
