@@ -15,23 +15,15 @@ jobs:
 
         #osx_image: xcode9.2 # macOS 10.12 sierra
 
-        - stage: "Bottle and upload"
+        - stage: "Build and test"
           os: osx
           osx_image: xcode10 # macOS 10.13 high_sierra
           install:
               - ./automation/install-stack.sh
-              - ./automation/install-homebrew-automation.sh
           script:
-              - homebrew_automation.rb help
-              - homebrew_automation.rb version
               - stack --no-terminal test
-          deploy:
-              provider: script
-              script: ./automation/bottle-and-upload.sh
-              on:
-                  tags: true
 
-        - stage: "Bottle and upload"
+        - stage: "Build and test"
           os: osx
           osx_image: xcode11.3 # macOS 10.14 Mojave
           install:
@@ -47,11 +39,38 @@ jobs:
               on:
                   tags: true
 
+        - stage: "Bottle and upload"
+          os: osx
+          osx_image: xcode10 # macOS 10.13 high_sierra
+          install:
+              - ./automation/install-homebrew-automation.sh
+          script:
+              - homebrew_automation.rb help
+              - homebrew_automation.rb version
+          deploy:
+              provider: script
+              script: ./automation/bottle-and-upload.sh
+              on:
+                  tags: true
+
+        - stage: "Bottle and upload"
+          os: osx
+          osx_image: xcode11.3 # macOS 10.14 Mojave
+          install:
+              - ./automation/install-homebrew-automation.sh
+          script:
+              - homebrew_automation.rb help
+              - homebrew_automation.rb version
+          deploy:
+              provider: script
+              script: ./automation/bottle-and-upload.sh
+              on:
+                  tags: true
+
 
 
         - stage: "Hand over to Github Actions"
           os: linux
-          sudo: false
           language: minimal
           install:
               - echo "We don't have new macOS 10.15 machines here at Travis, so we'll need Github for that."
