@@ -3,6 +3,8 @@
 set -e
 set -x
 
+which homebrew_automation.rb || ./automation/install-homebrew-automation.sh
+
 homebrew_automation.rb bottle gather-and-publish \
     --source-user easoncxz \
     --source-repo hack-assembler \
