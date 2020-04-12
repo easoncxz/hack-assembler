@@ -4,7 +4,9 @@ hack-assembler
 [![Build Status](https://travis-ci.org/easoncxz/hack-assembler.svg?branch=master)](https://travis-ci.org/easoncxz/hack-assembler)
 ![Build and test](https://github.com/easoncxz/hack-assembler/workflows/Build%20and%20test/badge.svg)
 
-![nand2tetris](resources/nand2tetris-banner.png "NAND to Tetris")
+<p align="center">
+  ![nand2tetris](resources/nand2tetris-banner.png "NAND to Tetris")
+</p>
 
 # An assembler for an educational assembly language
 
@@ -21,7 +23,9 @@ for that course: [(PDF) 6.  Assembler][chapter].
 # Installation
 
     $ brew install easoncxz/tap/hack-assembler
+    ... Homebrew does its thing ...
     $ which hack-assembler
+    /usr/local/bin/hack-assembler
 
 For macOS, I've set up some CI servers to pre-compile the package for you if you 
 are on High Sierra (macOS 10.13) through to Catalina (macOS 10.15), so the `brew 
@@ -53,12 +57,16 @@ In a file, say `two-and-three.asm`:
 
     // Computes R0 = 2 + 3  (R0 refers to RAM[0])
 
-    @2
-    D=A
-    @3
-    D=D+A
-    @0
-    M=D
+        @2
+        D=A
+        @3
+        D=D+A
+        @0
+        M=D
+    (INFINITE_LOOP)
+        @INFINITE_LOOP
+        0;JMP
+
 
 If we run the command:
 
@@ -73,26 +81,38 @@ We will get a file `two-and-three.hack` with the contents below:
     0000000000000000
     1110001100001000
 
+I have provided the above `two-and-three.asm` and a reference output
+`two-and-three.reference.hack` inside the `resources` directory for your
+convenience.
+
 # Hack language and platform
 
-You'll have to read the chapter in the book to know more about the syntax and 
-semantics of the Hack language: [(PDF) 6.  Assembler][chapter]. To execute the 
-resulting Hack binary machine code, you'll have to use the Hack "CPU Emulator" 
-GUI program, which is implemented in Java Swing and provided by the NAND to 
-Tetris course staff: See [The Nand to Tetris Software Suite][software]. I've 
-checked-in a copy of their software suite here at 
+The Hack language has only a handful of types of instructions:
+
+- "A instructions", with their leading `@`, and
+- "C instructions", with three sometimes-optional components separated by `=`
+  and `;` symbols, and
+- Some pseudo-instructions like comments (`//`) and labels (`(LABEL)`).
+
+I implemented these in the `Model` module.  To know more about the syntax and
+semantics of the Hack language, you'd have to read the chapter in the book :
+[(PDF) 6.  Assembler][chapter].
+
+To execute the resulting Hack binary machine code, you'll have to use the "CPU
+Emulator" GUI program, which is implemented in Java Swing and provided by the
+NAND to Tetris course staff: See [The Nand to Tetris Software Suite][software].
+I've checked-in a copy of their software suite here at
 [resources/nand2tetris.zip][zip].
 
-The GUI can be launched via the script at `nand2tetris/tools/CPUEmulator.sh`. It 
-looks like this if we load up the example `two-and-three.hack` program from 
-above:
+The GUI can be launched via the script at `nand2tetris/tools/CPUEmulator.sh`
+inside the zip file. It looks like this if we load up the example
+`resources/two-and-three.reference.hack` program from above:
 
 ![CPU Emulator](resources/CPUEmulator_screenshot.png "CPU Emulator")
 
-"File > Load Program", select your plain-text binary `.hack` file, then click 
-the "Run" icon (`>>`). In this case, since the program didn't finish off with an 
-infinite loop, the program counter just keeps advancing down the ROM without 
-stopping. Just click the "Stop" icon manually.
+Click the "Load Program" icon (brown folder), select your plain-text binary
+`.hack` file, then click the "Run" icon (`>>` symbol) to start running your
+Hack program.
 
 # Development
 
@@ -117,9 +137,31 @@ Then you're ready to compile some code.
 
     $
 
+# About packaging and publishing
+
+As you'd probably have figured from the above, I've published `hack-assembler` 
+as a Homebrew Formula, [`hack-assembler.rb`][formula], over in my personal 
+Homebrew Tap at [`easoncxz/homebrew-tap`][tap]. "Formula" and "Tap" are 
+[Homebrew's beer-themed jargon words][beer]. Homebrew identifies my tap by their 
+naming convention as `easoncxz/tap`, hence the Homebrew command `brew install 
+easoncxz/tap/hack-assembler`.
+
+To know more about how I've set it all up, you can read through my `.travis.yml` 
+and `.github/workflows/` continuous-integration configuration files. It's a bit 
+of a mess because I had to use Travis CI's macOS build servers to get macOS 
+versions 10.13 and 10.14, and Github Action's build servers to get macOS 10.15.  
+
+To decouple this repo from the nitty-gritty Homebrew-related details, I dealt 
+with the Homebrew publishing workflows in a RubyGem I created for exactly this 
+purpose, called [`homebrew_automation`][gem]. I use the `homebrew_automation.rb` 
+CLI tool in this repo via `gem install homebrew_automation`.
+
 [homepage]: http://www.nand2tetris.org/
 [project]: https://www.nand2tetris.org/project06
 [chapter]: resources/chapter-06.pdf
 [software]: https://www.nand2tetris.org/software
 [zip]: resources/nand2tetris.zip
 [hs-stack]: https://docs.haskellstack.org/en/stable/README/
+[tap]: https://github.com/easoncxz/homebrew-tap
+[formula]: https://github.com/easoncxz/homebrew-tap/blob/master/Formula/hack-assembler.rb
+[beer]: https://docs.brew.sh/
