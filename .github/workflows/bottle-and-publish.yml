@@ -53,5 +53,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install homebrew_automation
+        run: ./automation/install-homebrew-automation.sh
+
       - name: Gather Bottles from Bintray and publish to Homebrew Tap
         run: ./automation/gather-and-publish.sh

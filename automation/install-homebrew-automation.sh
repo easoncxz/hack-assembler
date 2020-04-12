@@ -8,6 +8,6 @@ which -a ruby
 ruby --version
 
 # Install our script
-gem install homebrew_automation
+which homebrew_automation.rb || gem install homebrew_automation
 homebrew_automation.rb --help
 homebrew_automation.rb version

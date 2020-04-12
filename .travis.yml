@@ -61,13 +61,16 @@ jobs:
 
         - stage: "Hand over to Github Actions"
           os: linux
-          language: minimal
           install:
               - echo "We don't have new macOS 10.15 machines here at Travis, so we'll need Github for that."
+              - ./automation/install-homebrew-automation.sh
           script:
-              - echo "Nothing to test"
+              - echo "However, it doesn't harm for us to publish the two Bottles we've built."
+              - echo "Github Actions is able to append their 10.15 bottle without wiping our Bottles."
           deploy:
               provider: script
-              script: ./automation/trigger-github-dispatch.sh trigger_ci_run
+              script:
+                  - ./automation/gather-and-publish.sh
+                  - ./automation/trigger-github-dispatch.sh trigger_ci_run
               on:
                 tags: true

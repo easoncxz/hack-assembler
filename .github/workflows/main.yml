@@ -66,11 +66,17 @@ jobs:
   bottle:
     runs-on: macos-10.15
     needs: build
+    if: github.event_name == 'create' && github.event.ref_type == 'tag'
 
     steps:
 
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+
+    - name: Install homebrew_automation
+      if: github.event_name == 'create' && github.event.ref_type == 'tag'
+      run: ./automation/install-homebrew-automation.sh
+
 
     - name: Bottle and upload
       if: github.event_name == 'create' && github.event.ref_type == 'tag'
