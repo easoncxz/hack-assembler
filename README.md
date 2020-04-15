@@ -38,7 +38,7 @@ machine's performance.
 ### Linux
 
 I haven't yet packaged up this app for Linux. My plan is to use Nix for this, but
-I don't yet know how to do this. Please download and compile from source for now,
+I don't yet know how to do so. Please download and compile from source for now,
 as per the [Development](#development) section.
 
 # Usage example
@@ -51,10 +51,10 @@ Here's a minimal example:
     1110001110010000
 
 `hack-assembler` reads Hack assembly code from standard input, and writes 
-plain-text binary machine code to standard output.  Here's a more realistic 
-example:
+plain-text binary machine code to standard output. Below is a more realistic 
+example.
 
-In a file, say `two-and-three.asm`:
+With a Hack assembly source file, say `two-and-three.asm`:
 
     // This file is part of www.nand2tetris.org
     // and the book "The Elements of Computing Systems"
@@ -86,6 +86,8 @@ We will get a file `two-and-three.hack` with the contents below:
     1110000010010000
     0000000000000000
     1110001100001000
+    0000000000000110
+    1110101010000111
 
 I have provided the above `two-and-three.asm` and a reference output
 `two-and-three.reference.hack` inside the `resources` directory for your
