@@ -20,6 +20,8 @@ for that course: [(PDF) 6.  Assembler][chapter].
 
 # Installation
 
+### macOS
+
     $ brew install easoncxz/tap/hack-assembler
     ... Homebrew does its thing ...
     $ which hack-assembler
@@ -32,6 +34,12 @@ platform, the above installation would still work, but Homebrew will need to use
 your machine to compile my Haskell code and all its dependencies. 
 `hack-assembler` will take some 15-60 minutes to build depending on your 
 machine's performance.
+
+### Linux
+
+I haven't yet packaged up this app for Linux. My plan is to use Nix for this, but
+I don't yet know how to do this. Please download and compile from source for now,
+as per the [Development](#development) section.
 
 # Usage example
 
